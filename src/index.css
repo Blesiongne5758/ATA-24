@@ -1,1 +1,104 @@
 @import "tailwindcss";
+
+@keyframes aura-pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+@keyframes aura-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fire-flicker {
+  0% { transform: scaleY(1) scaleX(1); opacity: 1; }
+  25% { transform: scaleY(1.2) scaleX(0.9); opacity: 0.8; }
+  50% { transform: scaleY(0.9) scaleX(1.1); opacity: 1; }
+  75% { transform: scaleY(1.1) scaleX(0.95); opacity: 0.9; }
+  100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+}
+
+@keyframes energy-ring {
+  0% { transform: rotate(0deg) scale(1); border-color: rgba(255, 165, 0, 0.8); }
+  50% { transform: rotate(180deg) scale(1.1); border-color: rgba(255, 69, 0, 0.6); }
+  100% { transform: rotate(360deg) scale(1); border-color: rgba(255, 165, 0, 0.8); }
+}
+
+@keyframes lightning {
+  0%, 100% { opacity: 0; }
+  10% { opacity: 1; }
+  20% { opacity: 0; }
+  30% { opacity: 0.8; }
+  40% { opacity: 0; }
+}
+
+@keyframes float-up {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) scale(0.3); opacity: 0; }
+}
+
+@keyframes scan-line {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes data-flow {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 0% 100%; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 165, 0, 0.5), 0 0 10px rgba(255, 165, 0, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.8), 0 0 40px rgba(255, 69, 0, 0.5); }
+}
+
+@keyframes particle-rise {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 1; }
+  50% { transform: translateY(-30px) translateX(10px) scale(0.8); opacity: 0.7; }
+  100% { transform: translateY(-60px) translateX(-5px) scale(0.2); opacity: 0; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-2px) rotate(-1deg); }
+  30% { transform: translateX(2px) rotate(1deg); }
+  50% { transform: translateX(-1px); }
+  70% { transform: translateX(1px); }
+  90% { transform: translateX(-1px); }
+}
+
+.animate-aura-pulse { animation: aura-pulse 1.5s ease-in-out infinite; }
+.animate-aura-rotate { animation: aura-rotate 3s linear infinite; }
+.animate-fire-flicker { animation: fire-flicker 0.3s ease-in-out infinite; }
+.animate-energy-ring { animation: energy-ring 2s linear infinite; }
+.animate-lightning { animation: lightning 0.5s ease-in-out infinite; }
+.animate-float-up { animation: float-up 1.5s ease-out infinite; }
+.animate-scan-line { animation: scan-line 2s linear infinite; }
+.animate-blink { animation: blink 1s step-end infinite; }
+.animate-data-flow { animation: data-flow 3s linear infinite; }
+.animate-glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
+.animate-particle-rise { animation: particle-rise 1s ease-out infinite; }
+.animate-shake { animation: shake 0.5s ease-in-out infinite; }
+
+.scrollbar-thin::-webkit-scrollbar { width: 4px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,165,0,0.5); border-radius: 2px; }
+
+.glass-panel {
+  background: rgba(10, 10, 30, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 165, 0, 0.2);
+}
+
+.cyber-grid {
+  background-image: 
+    linear-gradient(rgba(255, 165, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 165, 0, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}

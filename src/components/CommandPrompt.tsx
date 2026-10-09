@@ -9,7 +9,7 @@ interface Message {
 export default function CommandPrompt({ isActive }: { isActive: boolean }) {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { type: 'system', text: '🤖 Sanobot AI Trading Agent v4.0.0 — Quantum Neural Engine', timestamp: new Date() },
+    { type: 'system', text: '🤖 PJ.BOT AI Trading Agent v4.0.0 — Quantum Neural Engine', timestamp: new Date() },
     { type: 'system', text: '📡 Modules: MT5 | WebSocket | REST API | gRPC', timestamp: new Date() },
     { type: 'system', text: '🧠 Models: GPT-4o | Claude-3.5 | Gemini | LSTM | XGBoost', timestamp: new Date() },
     { type: 'system', text: '⚡ Type "help" for commands | "status" for agent info', timestamp: new Date() },
@@ -128,7 +128,7 @@ Model: GPT-4o + LSTM`, timestamp: new Date() }]), 1500);
           <div className="w-2 h-2 rounded-full bg-yellow-500/80" />
           <div className="w-2 h-2 rounded-full bg-green-500/80" />
         </div>
-        <span className="text-[9px] text-cyan-500/60 font-mono ml-1">sanobot@quantum:~$</span>
+        <span className="text-[9px] text-cyan-500/60 font-mono ml-1">pjbot@quantum:~$</span>
         {isActive && <span className="ml-auto text-[9px] text-cyan-400 animate-pulse font-mono">● LIVE</span>}
       </div>
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-2.5 font-mono text-[10px] scrollbar-thin min-h-0" style={{ maxHeight: '280px' }}>

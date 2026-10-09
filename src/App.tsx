@@ -39,14 +39,14 @@ export default function App() {
       <header className="glass-panel border-b border-cyan-900/20 px-4 py-2 flex items-center justify-between relative z-50">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm font-black shadow-lg shadow-cyan-500/20">
-            <span className="text-white">S</span>
+            <span className="text-white">PJ</span>
           </div>
           <div>
             <h1 className="text-base font-black tracking-tight">
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent neon-text">SANOBOT</span>
+              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent neon-text">PJ.BOT</span>
               <span className="text-gray-400 font-normal text-xs ml-2">AI Trading Agent</span>
             </h1>
-            <p className="text-[9px] text-gray-600 tracking-widest uppercase">v4.0.0 | Quantum Neural Trading System</p>
+            <p className="text-[9px] text-gray-600 tracking-widest uppercase">PJ.BOT v4.0.0 | Quantum Neural Trading System</p>
           </div>
         </div>
 
@@ -475,7 +475,7 @@ function ConnectionPanel({ mt5Connected, setMt5Connected, wsConnected, setWsConn
       </ConnectionCard>
 
       <ConnectionCard title="🌐 WebSocket" connected={wsConnected} onToggle={() => setWsConnected(!wsConnected)}>
-        <ParamInput label="WebSocket URL" defaultValue="wss://api.sanobot.ai/ws" />
+        <ParamInput label="WebSocket URL" defaultValue="wss://api.pjbot.ai/ws" />
         <ParamInput label="API Key" defaultValue="sk-xxxx-xxxx" />
         <ParamInput label="Reconnect (ms)" defaultValue="5000" />
         <ParamInput label="Heartbeat (ms)" defaultValue="30000" />
@@ -484,7 +484,7 @@ function ConnectionPanel({ mt5Connected, setMt5Connected, wsConnected, setWsConn
       </ConnectionCard>
 
       <ConnectionCard title="🔗 REST API" connected={apiConnected} onToggle={() => setApiConnected(!apiConnected)}>
-        <ParamInput label="Base URL" defaultValue="https://api.sanobot.ai/v4" />
+        <ParamInput label="Base URL" defaultValue="https://api.pjbot.ai/v4" />
         <ParamInput label="API Token" defaultValue="Bearer eyJhbGci..." />
         <ParamInput label="Timeout (ms)" defaultValue="10000" />
         <ParamInput label="Rate Limit (req/min)" defaultValue="60" />
@@ -494,8 +494,8 @@ function ConnectionPanel({ mt5Connected, setMt5Connected, wsConnected, setWsConn
 
       <ConnectionCard title="📱 Web/App Integration" connected={true} onToggle={() => {}}>
         <ParamSelect label="Platform" options={['Web Dashboard', 'iOS App', 'Android App', 'Desktop', 'Telegram Bot', 'Discord Bot']} />
-        <ParamInput label="Webhook URL" defaultValue="https://hooks.sanobot.ai/trading" />
-        <ParamInput label="Callback URL" defaultValue="https://app.sanobot.ai/callback" />
+        <ParamInput label="Webhook URL" defaultValue="https://hooks.pjbot.ai/trading" />
+        <ParamInput label="Callback URL" defaultValue="https://app.pjbot.ai/callback" />
         <ParamToggle label="Web Push" defaultOn />
         <ParamToggle label="Real-time Updates" defaultOn />
         <ParamInput label="Refresh (ms)" defaultValue="1000" />
@@ -660,7 +660,7 @@ function StressTestPanel() {
       <div className="glass-panel rounded-2xl p-5">
         <h3 className="text-cyan-400 font-bold mb-4 text-[10px] uppercase tracking-[0.2em]">⚡ API Stress Test</h3>
         <div className="space-y-3">
-          <ParamInput label="Target URL" defaultValue="https://api.sanobot.ai/v4/trade" />
+          <ParamInput label="Target URL" defaultValue="https://api.pjbot.ai/v4/trade" />
           <ParamInput label="Concurrent Requests" defaultValue="1000" />
           <ParamInput label="Duration (seconds)" defaultValue="60" />
           <ParamSelect label="HTTP Method" options={['GET', 'POST', 'PUT']} />

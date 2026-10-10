@@ -178,10 +178,7 @@
   text-shadow: 0 0 7px rgba(255,160,0,0.6), 0 0 20px rgba(255,100,0,0.3);
 }
 
-.scrollbar-thin::-webkit-scrollbar { width: 4px; }
-.scrollbar-thin::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-.scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(0,180,255,0.3); border-radius: 2px; }
-.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(0,180,255,0.5); }
+/* scrollbar-thin already defined below */
 
 /* Trading type cards */
 .trading-type-card {
@@ -217,4 +214,20 @@
 }
 .animate-fadeIn {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Custom scrollbar for log containers */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border-radius: 2px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(0,180,255,0.3);
+  border-radius: 2px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,180,255,0.5);
 }

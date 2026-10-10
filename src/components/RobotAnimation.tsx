@@ -22,6 +22,7 @@ interface RoutingLink {
 export default function RobotAnimation({ isActive, size = 'lg' }: RobotAnimationProps) {
   const [pulsePhase, setPulsePhase] = useState(0);
   const [activeRoute, setActiveRoute] = useState(0);
+  const [eyeBlink, setEyeBlink] = useState(false);
 
   useEffect(() => {
     if (!isActive) return;
@@ -38,6 +39,15 @@ export default function RobotAnimation({ isActive, size = 'lg' }: RobotAnimation
     }, 800);
     return () => clearInterval(interval);
   }, [isActive]);
+
+  // Eye blink animation
+  useEffect(() => {
+    const blinkInterval = setInterval(() => {
+      setEyeBlink(true);
+      setTimeout(() => setEyeBlink(false), 150);
+    }, 3000 + Math.random() * 2000);
+    return () => clearInterval(blinkInterval);
+  }, []);
 
   const routingNodes: RoutingNode[] = useMemo(() => [
     { id: 'core', x: 150, y: 150, label: 'CORE', color: '#00d4ff' },
@@ -169,30 +179,29 @@ export default function RobotAnimation({ isActive, size = 'lg' }: RobotAnimation
         </>
       )}
 
-      {/* 3D Robot SVG */}
+      {/* Cute 3D Robot SVG */}
       <div className={`relative z-10 ${isActive ? 'animate-shake' : 'animate-float'}`}>
-        <svg viewBox="0 0 200 240" className="w-full h-full" style={{ filter: isActive ? 'drop-shadow(0 0 15px rgba(0,200,255,0.4))' : 'drop-shadow(0 0 5px rgba(0,100,200,0.2))' }}>
+        <svg viewBox="0 0 200 240" className="w-full h-full" style={{ filter: isActive ? 'drop-shadow(0 0 20px rgba(0,200,255,0.5))' : 'drop-shadow(0 0 8px rgba(0,150,255,0.3))' }}>
           <defs>
             <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={isActive ? '#1a2a4a' : '#0d1525'} />
-              <stop offset="50%" stopColor={isActive ? '#0f1f3a' : '#080d1a'} />
-              <stop offset="100%" stopColor={isActive ? '#1a2a4a' : '#0d1525'} />
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="50%" stopColor="#e8f4ff" />
+              <stop offset="100%" stopColor="#d0e8ff" />
             </linearGradient>
-            <linearGradient id="metalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#2a3a5a" />
-              <stop offset="50%" stopColor="#1a2540" />
-              <stop offset="100%" stopColor="#0f1a30" />
-            </linearGradient>
-            <linearGradient id="coreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#00d4ff" />
-              <stop offset="100%" stopColor="#0066ff" />
+            <linearGradient id="bodyShadow" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="rgba(0,150,255,0.1)" />
+              <stop offset="100%" stopColor="rgba(0,100,200,0.2)" />
             </linearGradient>
             <radialGradient id="eyeGlow">
               <stop offset="0%" stopColor="#00ffff" />
-              <stop offset="50%" stopColor="#0088ff" />
+              <stop offset="70%" stopColor="#0088ff" />
               <stop offset="100%" stopColor="#0044aa" />
             </radialGradient>
-            <filter id="neonGlow">
+            <radialGradient id="cheekGlow">
+              <stop offset="0%" stopColor="rgba(255,150,200,0.6)" />
+              <stop offset="100%" stopColor="rgba(255,150,200,0)" />
+            </radialGradient>
+            <filter id="softGlow">
               <feGaussianBlur stdDeviation="3" result="blur" />
               <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
             </filter>
@@ -202,146 +211,130 @@ export default function RobotAnimation({ isActive, size = 'lg' }: RobotAnimation
             </filter>
           </defs>
 
-          {/* === HEAD === */}
-          {/* Head base - 3D effect */}
-          <path d="M65 25 L135 25 L140 30 L140 70 L135 75 L65 75 L60 70 L60 30 Z"
-            fill="url(#bodyGrad)" stroke={isActive ? '#00d4ff' : '#1a3050'} strokeWidth="1.5" />
-          {/* Head top highlight */}
-          <path d="M65 25 L135 25 L140 30 L60 30 Z"
-            fill="rgba(0,200,255,0.08)" />
-          {/* Head side panels */}
-          <rect x="62" y="35" width="4" height="30" rx="2" fill={isActive ? 'rgba(0,200,255,0.3)' : 'rgba(30,60,100,0.3)'} />
-          <rect x="134" y="35" width="4" height="30" rx="2" fill={isActive ? 'rgba(0,200,255,0.3)' : 'rgba(30,60,100,0.3)'} />
+          {/* === HEAD (Large, Round, Cute) === */}
+          {/* Head shadow */}
+          <ellipse cx="100" cy="95" rx="58" ry="8" fill="rgba(0,0,0,0.1)" />
+          
+          {/* Main head - big and round */}
+          <ellipse cx="100" cy="55" rx="55" ry="50" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="2" />
+          
+          {/* Head highlight */}
+          <ellipse cx="85" cy="35" rx="20" ry="15" fill="rgba(255,255,255,0.6)" />
           
           {/* Antenna */}
-          <line x1="100" y1="25" x2="100" y2="10" stroke={isActive ? '#00d4ff' : '#1a3050'} strokeWidth="2" />
-          <circle cx="100" cy="8" r="4" fill={isActive ? '#00d4ff' : '#1a3050'} filter={isActive ? 'url(#neonGlow)' : ''}>
+          <line x1="100" y1="10" x2="100" y2="0" stroke="rgba(0,180,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="100" cy="0" r="4" fill={isActive ? '#00d4ff' : '#88ccff'} filter={isActive ? 'url(#strongGlow)' : ''}>
             {isActive && <animate attributeName="r" values="4;6;4" dur="1s" repeatCount="indefinite" />}
             {isActive && <animate attributeName="fill" values="#00d4ff;#00ffcc;#00d4ff" dur="1.5s" repeatCount="indefinite" />}
           </circle>
 
-          {/* Visor / Eyes */}
-          <rect x="70" y="38" width="60" height="18" rx="9" fill="rgba(0,0,0,0.6)" stroke={isActive ? '#00d4ff' : '#1a3050'} strokeWidth="1" />
-          {/* Left Eye */}
-          <ellipse cx="85" cy="47" rx="8" ry="6" fill={isActive ? 'url(#eyeGlow)' : '#0a1520'} filter={isActive ? 'url(#neonGlow)' : ''}>
-            {isActive && <animate attributeName="rx" values="8;7;8" dur="3s" repeatCount="indefinite" />}
+          {/* === EYES (Big, Expressive, Cute) === */}
+          {/* Left eye white */}
+          <ellipse cx="78" cy="55" rx="15" ry={eyeBlink ? 2 : 18} fill="white" stroke="rgba(0,150,255,0.2)" strokeWidth="1">
+            {eyeBlink && <animate attributeName="ry" values="2;18" dur="0.15s" />}
           </ellipse>
-          {/* Right Eye */}
-          <ellipse cx="115" cy="47" rx="8" ry="6" fill={isActive ? 'url(#eyeGlow)' : '#0a1520'} filter={isActive ? 'url(#neonGlow)' : ''}>
-            {isActive && <animate attributeName="rx" values="8;7;8" dur="3s" repeatCount="indefinite" />}
-          </ellipse>
-          {/* Eye inner glow */}
-          {isActive && (
+          {/* Left eye iris */}
+          {!eyeBlink && (
             <>
-              <ellipse cx="85" cy="47" rx="4" ry="3" fill="#ffffff" opacity="0.8">
-                <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite" />
+              <ellipse cx="78" cy="55" rx="10" ry="12" fill="url(#eyeGlow)" filter="url(#softGlow)">
+                {isActive && <animate attributeName="rx" values="10;9;10" dur="3s" repeatCount="indefinite" />}
               </ellipse>
-              <ellipse cx="115" cy="47" rx="4" ry="3" fill="#ffffff" opacity="0.8">
-                <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite" />
-              </ellipse>
+              {/* Left eye pupil */}
+              <ellipse cx="78" cy="55" rx="5" ry="6" fill="#001133" />
+              {/* Left eye highlight */}
+              <ellipse cx="75" cy="50" rx="3" ry="4" fill="white" opacity="0.9" />
+              <ellipse cx="81" cy="58" rx="1.5" ry="2" fill="white" opacity="0.6" />
             </>
           )}
 
-          {/* Mouth / Speaker grill */}
-          <rect x="82" y="62" width="36" height="6" rx="3" fill="rgba(0,0,0,0.5)" stroke={isActive ? 'rgba(0,200,255,0.4)' : '#1a3050'} strokeWidth="0.5" />
-          {[0,1,2,3,4,5].map(i => (
-            <rect key={i} x={86 + i * 5} y="63" width="2" height="4" rx="1"
-              fill={isActive ? '#00d4ff' : '#1a3050'} opacity={isActive ? 0.6 + Math.sin(i) * 0.3 : 0.3}>
-              {isActive && <animate attributeName="opacity" values="0.3;0.9;0.3" dur={`${0.5 + i * 0.1}s`} repeatCount="indefinite" />}
-            </rect>
-          ))}
+          {/* Right eye white */}
+          <ellipse cx="122" cy="55" rx="15" ry={eyeBlink ? 2 : 18} fill="white" stroke="rgba(0,150,255,0.2)" strokeWidth="1">
+            {eyeBlink && <animate attributeName="ry" values="2;18" dur="0.15s" />}
+          </ellipse>
+          {/* Right eye iris */}
+          {!eyeBlink && (
+            <>
+              <ellipse cx="122" cy="55" rx="10" ry="12" fill="url(#eyeGlow)" filter="url(#softGlow)">
+                {isActive && <animate attributeName="rx" values="10;9;10" dur="3s" repeatCount="indefinite" />}
+              </ellipse>
+              {/* Right eye pupil */}
+              <ellipse cx="122" cy="55" rx="5" ry="6" fill="#001133" />
+              {/* Right eye highlight */}
+              <ellipse cx="119" cy="50" rx="3" ry="4" fill="white" opacity="0.9" />
+              <ellipse cx="125" cy="58" rx="1.5" ry="2" fill="white" opacity="0.6" />
+            </>
+          )}
 
-          {/* === NECK === */}
-          <rect x="88" y="75" width="24" height="10" fill="url(#metalGrad)" stroke={isActive ? 'rgba(0,200,255,0.3)' : '#1a3050'} strokeWidth="0.5" />
-          <line x1="92" y1="78" x2="92" y2="83" stroke={isActive ? '#00d4ff' : '#1a3050'} strokeWidth="0.5" opacity="0.5" />
-          <line x1="100" y1="78" x2="100" y2="83" stroke={isActive ? '#00d4ff' : '#1a3050'} strokeWidth="0.5" opacity="0.5" />
-          <line x1="108" y1="78" x2="108" y2="83" stroke={isActive ? '#00d4ff' : '#1a3050'} strokeWidth="0.5" opacity="0.5" />
+          {/* Cute blush cheeks */}
+          <ellipse cx="65" cy="65" rx="8" ry="5" fill="url(#cheekGlow)" />
+          <ellipse cx="135" cy="65" rx="8" ry="5" fill="url(#cheekGlow)" />
 
-          {/* === BODY === */}
-          <path d="M55 85 L145 85 L150 90 L150 155 L145 160 L55 160 L50 155 L50 90 Z"
-            fill="url(#bodyGrad)" stroke={isActive ? '#00d4ff' : '#1a3050'} strokeWidth="1.5" />
-          {/* Body top highlight */}
-          <path d="M55 85 L145 85 L150 90 L50 90 Z" fill="rgba(0,200,255,0.06)" />
-          {/* Body panel lines */}
-          <line x1="60" y1="95" x2="60" y2="150" stroke={isActive ? 'rgba(0,200,255,0.2)' : 'rgba(30,60,100,0.2)'} strokeWidth="0.5" />
-          <line x1="140" y1="95" x2="140" y2="150" stroke={isActive ? 'rgba(0,200,255,0.2)' : 'rgba(30,60,100,0.2)'} strokeWidth="0.5" />
-          <line x1="70" y1="130" x2="130" y2="130" stroke={isActive ? 'rgba(0,200,255,0.15)' : 'rgba(30,60,100,0.15)'} strokeWidth="0.5" />
+          {/* === MOUTH (Cute smile) === */}
+          <path d="M 85 75 Q 100 82 115 75" fill="none" stroke={isActive ? '#00aaff' : '#88bbdd'} strokeWidth="2.5" strokeLinecap="round">
+            {isActive && <animate attributeName="d" values="M 85 75 Q 100 82 115 75;M 85 73 Q 100 80 115 73;M 85 75 Q 100 82 115 75" dur="2s" repeatCount="indefinite" />}
+          </path>
 
-          {/* Chest Core - Reactor */}
-          <circle cx="100" cy="115" r="18" fill="rgba(0,0,0,0.5)" stroke={isActive ? '#00d4ff' : '#1a3050'} strokeWidth="1.5" />
-          <circle cx="100" cy="115" r="14" fill="none" stroke={isActive ? 'rgba(0,200,255,0.3)' : 'rgba(30,60,100,0.2)'} strokeWidth="0.5" strokeDasharray="3 3">
-            {isActive && <animateTransform attributeName="transform" type="rotate" from="0 100 115" to="360 100 115" dur="4s" repeatCount="indefinite" />}
+          {/* === BODY (Chubby, Cute) === */}
+          {/* Body shadow */}
+          <ellipse cx="100" cy="195" rx="45" ry="6" fill="rgba(0,0,0,0.1)" />
+          
+          {/* Main body - round and chubby */}
+          <ellipse cx="100" cy="145" rx="42" ry="48" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="2" />
+          
+          {/* Body highlight */}
+          <ellipse cx="85" cy="125" rx="15" ry="20" fill="rgba(255,255,255,0.5)" />
+          
+          {/* Belly button / core */}
+          <circle cx="100" cy="145" r="12" fill={isActive ? 'rgba(0,200,255,0.3)' : 'rgba(0,150,255,0.1)'} stroke={isActive ? '#00d4ff' : '#88ccff'} strokeWidth="1.5" />
+          <circle cx="100" cy="145" r="7" fill={isActive ? '#00d4ff' : '#88ccff'} filter={isActive ? 'url(#strongGlow)' : ''}>
+            {isActive && <animate attributeName="r" values="7;9;7" dur="1.5s" repeatCount="indefinite" />}
+            {isActive && <animate attributeName="fill" values="#00d4ff;#00ffcc;#00d4ff" dur="1s" repeatCount="indefinite" />}
           </circle>
-          <circle cx="100" cy="115" r="10" fill={isActive ? 'url(#coreGrad)' : '#0a1520'} filter={isActive ? 'url(#strongGlow)' : ''}>
-            {isActive && <animate attributeName="r" values="10;12;10" dur="1.5s" repeatCount="indefinite" />}
-          </circle>
-          <circle cx="100" cy="115" r="5" fill="#ffffff" opacity={isActive ? 0.9 : 0.2}>
+          <circle cx="100" cy="145" r="3" fill="white" opacity={isActive ? 0.9 : 0.5}>
             {isActive && <animate attributeName="opacity" values="0.9;0.5;0.9" dur="1s" repeatCount="indefinite" />}
           </circle>
-          {/* Core energy arcs */}
-          {isActive && (
-            <>
-              <circle cx="100" cy="115" r="22" fill="none" stroke="rgba(0,200,255,0.2)" strokeWidth="0.5">
-                <animate attributeName="r" values="18;28;18" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite" />
-              </circle>
-            </>
-          )}
 
-          {/* Status LEDs on body */}
-          <circle cx="70" cy="100" r="2" fill={isActive ? '#00ff88' : '#1a3050'}>
+          {/* === ARMS (Short, Cute) === */}
+          {/* Left arm */}
+          <ellipse cx="55" cy="140" rx="12" ry="20" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="1.5" transform="rotate(-20 55 140)">
+            {isActive && <animateTransform attributeName="transform" type="rotate" values="-20 55 140;-15 55 140;-20 55 140" dur="2s" repeatCount="indefinite" />}
+          </ellipse>
+          {/* Left hand */}
+          <circle cx="50" cy="155" r="8" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="1" />
+
+          {/* Right arm */}
+          <ellipse cx="145" cy="140" rx="12" ry="20" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="1.5" transform="rotate(20 145 140)">
+            {isActive && <animateTransform attributeName="transform" type="rotate" values="20 145 140;15 145 140;20 145 140" dur="2s" repeatCount="indefinite" />}
+          </ellipse>
+          {/* Right hand */}
+          <circle cx="150" cy="155" r="8" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="1" />
+
+          {/* === LEGS (Short, Stubby) === */}
+          {/* Left leg */}
+          <ellipse cx="85" cy="190" rx="10" ry="15" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="1.5" />
+          {/* Left foot */}
+          <ellipse cx="85" cy="205" rx="12" ry="6" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="1" />
+
+          {/* Right leg */}
+          <ellipse cx="115" cy="190" rx="10" ry="15" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="1.5" />
+          {/* Right foot */}
+          <ellipse cx="115" cy="205" rx="12" ry="6" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="1" />
+
+          {/* === DECORATIVE DETAILS === */}
+          {/* Ear antennas */}
+          <circle cx="50" cy="45" r="5" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="1" />
+          <circle cx="150" cy="45" r="5" fill="url(#bodyGrad)" stroke="rgba(0,180,255,0.3)" strokeWidth="1" />
+          
+          {/* Small status LEDs */}
+          <circle cx="90" cy="110" r="2" fill={isActive ? '#00ff88' : '#88ccff'}>
             {isActive && <animate attributeName="fill" values="#00ff88;#00cc66;#00ff88" dur="1s" repeatCount="indefinite" />}
           </circle>
-          <circle cx="78" cy="100" r="2" fill={isActive ? '#ffaa00' : '#1a3050'}>
+          <circle cx="100" cy="108" r="2" fill={isActive ? '#ffaa00' : '#88ccff'}>
             {isActive && <animate attributeName="fill" values="#ffaa00;#ff8800;#ffaa00" dur="1.3s" repeatCount="indefinite" />}
           </circle>
-          <circle cx="86" cy="100" r="2" fill={isActive ? '#00d4ff' : '#1a3050'}>
+          <circle cx="110" cy="110" r="2" fill={isActive ? '#00d4ff' : '#88ccff'}>
             {isActive && <animate attributeName="fill" values="#00d4ff;#0088ff;#00d4ff" dur="0.8s" repeatCount="indefinite" />}
           </circle>
-
-          {/* === ARMS === */}
-          {/* Left Arm */}
-          <path d="M35 90 L50 88 L50 130 L45 135 L35 135 L30 130 Z"
-            fill="url(#metalGrad)" stroke={isActive ? 'rgba(0,200,255,0.4)' : '#1a3050'} strokeWidth="1">
-            {isActive && <animate attributeName="d" values="M35 90 L50 88 L50 130 L45 135 L35 135 L30 130 Z;M33 88 L48 86 L50 128 L45 133 L33 133 L28 128 Z;M35 90 L50 88 L50 130 L45 135 L35 135 L30 130 Z" dur="3s" repeatCount="indefinite" />}
-          </path>
-          {/* Left hand */}
-          <circle cx="38" cy="140" r="6" fill="url(#metalGrad)" stroke={isActive ? 'rgba(0,200,255,0.3)' : '#1a3050'} strokeWidth="0.5" />
-          <circle cx="38" cy="140" r="3" fill={isActive ? '#00d4ff' : '#0a1520'} opacity="0.5" />
-
-          {/* Right Arm */}
-          <path d="M150 88 L165 90 L170 130 L165 135 L155 135 L150 130 Z"
-            fill="url(#metalGrad)" stroke={isActive ? 'rgba(0,200,255,0.4)' : '#1a3050'} strokeWidth="1">
-            {isActive && <animate attributeName="d" values="M150 88 L165 90 L170 130 L165 135 L155 135 L150 130 Z;M152 86 L167 88 L172 128 L167 133 L157 133 L152 128 Z;M150 88 L165 90 L170 130 L165 135 L155 135 L150 130 Z" dur="3s" repeatCount="indefinite" />}
-          </path>
-          {/* Right hand */}
-          <circle cx="162" cy="140" r="6" fill="url(#metalGrad)" stroke={isActive ? 'rgba(0,200,255,0.3)' : '#1a3050'} strokeWidth="0.5" />
-          <circle cx="162" cy="140" r="3" fill={isActive ? '#00d4ff' : '#0a1520'} opacity="0.5" />
-
-          {/* === LEGS === */}
-          {/* Left Leg */}
-          <path d="M70 160 L90 160 L92 200 L88 210 L72 210 L68 200 Z"
-            fill="url(#metalGrad)" stroke={isActive ? 'rgba(0,200,255,0.3)' : '#1a3050'} strokeWidth="1" />
-          {/* Left Foot */}
-          <path d="M68 210 L92 210 L95 218 L92 222 L65 222 L62 218 Z"
-            fill="url(#bodyGrad)" stroke={isActive ? 'rgba(0,200,255,0.3)' : '#1a3050'} strokeWidth="1" />
-          <rect x="72" y="215" width="16" height="2" rx="1" fill={isActive ? 'rgba(0,200,255,0.4)' : 'rgba(30,60,100,0.3)'} />
-
-          {/* Right Leg */}
-          <path d="M110 160 L130 160 L132 200 L128 210 L112 210 L108 200 Z"
-            fill="url(#metalGrad)" stroke={isActive ? 'rgba(0,200,255,0.3)' : '#1a3050'} strokeWidth="1" />
-          {/* Right Foot */}
-          <path d="M108 210 L132 210 L135 218 L132 222 L105 222 L102 218 Z"
-            fill="url(#bodyGrad)" stroke={isActive ? 'rgba(0,200,255,0.3)' : '#1a3050'} strokeWidth="1" />
-          <rect x="112" y="215" width="16" height="2" rx="1" fill={isActive ? 'rgba(0,200,255,0.4)' : 'rgba(30,60,100,0.3)'} />
-
-          {/* Knee joints */}
-          <circle cx="80" cy="185" r="4" fill={isActive ? 'rgba(0,200,255,0.2)' : 'rgba(30,60,100,0.2)'} stroke={isActive ? 'rgba(0,200,255,0.3)' : '#1a3050'} strokeWidth="0.5" />
-          <circle cx="120" cy="185" r="4" fill={isActive ? 'rgba(0,200,255,0.2)' : 'rgba(30,60,100,0.2)'} stroke={isActive ? 'rgba(0,200,255,0.3)' : '#1a3050'} strokeWidth="0.5" />
-
-          {/* Shoulder joints */}
-          <circle cx="50" cy="90" r="5" fill={isActive ? 'rgba(0,200,255,0.2)' : 'rgba(30,60,100,0.2)'} stroke={isActive ? 'rgba(0,200,255,0.4)' : '#1a3050'} strokeWidth="0.5" />
-          <circle cx="150" cy="90" r="5" fill={isActive ? 'rgba(0,200,255,0.2)' : 'rgba(30,60,100,0.2)'} stroke={isActive ? 'rgba(0,200,255,0.4)' : '#1a3050'} strokeWidth="0.5" />
         </svg>
       </div>
 

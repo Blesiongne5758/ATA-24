@@ -1,847 +1,233 @@
 import { useState } from 'react';
-import RobotAnimation from './components/RobotAnimation';
-import CommandPrompt from './components/CommandPrompt';
 
-type Tab = 'dashboard' | 'parameters' | 'connection' | 'chart' | 'stresstest' | 'aimodels' | 'terminal' | 'agents';
-type TradingType = 'saham' | 'crypto' | 'forex' | 'komoditas';
+type Section = 'overview' | 'architecture' | 'components' | 'ai-types' | 'strategies' | 'ml-models' | 'data' | 'risk' | 'backtesting' | 'deployment' | 'multi-agent' | 'integration' | 'security' | 'challenges' | 'trends';
 
-const tradingTypes: { id: TradingType; label: string; icon: string; color: string; desc: string; pairs: string[] }[] = [
-  { id: 'saham', label: 'Saham', icon: '📈', color: 'from-blue-500 to-cyan-500', desc: 'Stock Market Trading', pairs: ['AAPL', 'GOOGL', 'TSLA', 'AMZN', 'MSFT', 'NVDA'] },
-  { id: 'crypto', label: 'Crypto', icon: '₿', color: 'from-orange-500 to-yellow-500', desc: 'Cryptocurrency Trading', pairs: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT'] },
-  { id: 'forex', label: 'Forex', icon: '💱', color: 'from-green-500 to-emerald-500', desc: 'Foreign Exchange', pairs: ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CHF'] },
-  { id: 'komoditas', label: 'Komoditas', icon: '🪙', color: 'from-purple-500 to-pink-500', desc: 'Commodities Trading', pairs: ['XAU/USD', 'XAG/USD', 'WTI/USD', 'BRENT', 'NATGAS'] },
+const sections: { id: Section; label: string; icon: string }[] = [
+  { id: 'overview', label: 'Overview', icon: '📖' },
+  { id: 'architecture', label: 'Arsitektur', icon: '🏗️' },
+  { id: 'components', label: 'Komponen', icon: '🔧' },
+  { id: 'ai-types', label: 'Jenis AI', icon: '🧠' },
+  { id: 'strategies', label: 'Strategi', icon: '📊' },
+  { id: 'ml-models', label: 'ML Models', icon: '🤖' },
+  { id: 'data', label: 'Data & Fitur', icon: '📈' },
+  { id: 'risk', label: 'Risk Mgmt', icon: '🛡️' },
+  { id: 'backtesting', label: 'Backtesting', icon: '📋' },
+  { id: 'deployment', label: 'Deployment', icon: '🚀' },
+  { id: 'multi-agent', label: 'Multi-Agent', icon: '🤝' },
+  { id: 'integration', label: 'Integrasi', icon: '🔌' },
+  { id: 'security', label: 'Keamanan', icon: '🔒' },
+  { id: 'challenges', label: 'Tantangan', icon: '⚠️' },
+  { id: 'trends', label: 'Future', icon: '🔮' },
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
-  const [isAgentActive, setIsAgentActive] = useState(false);
-  const [tradingType, setTradingType] = useState<TradingType>('forex');
-  const [mt5Connected, setMt5Connected] = useState(false);
-  const [wsConnected, setWsConnected] = useState(false);
-  const [apiConnected, setApiConnected] = useState(false);
-
-  const tabs: { id: Tab; label: string; icon: string }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: '⬡' },
-    { id: 'parameters', label: 'Parameters', icon: '◈' },
-    { id: 'connection', label: 'Connection', icon: '◉' },
-    { id: 'chart', label: 'Chart Screen', icon: '◇' },
-    { id: 'stresstest', label: 'Stress Test', icon: '⚡' },
-    { id: 'aimodels', label: 'AI Models', icon: '◊' },
-    { id: 'terminal', label: 'Terminal', icon: '▣' },
-    { id: 'agents', label: 'Multi-Agent', icon: '⬢' },
-  ];
-
-  const currentTrading = tradingTypes.find(t => t.id === tradingType)!;
+  const [activeSection, setActiveSection] = useState<Section>('overview');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#060a14] text-white cyber-grid flex flex-col overflow-hidden">
-      {/* Top Bar */}
-      <header className="glass-panel border-b border-cyan-900/20 px-4 py-2 flex items-center justify-between relative z-50">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm font-black shadow-lg shadow-cyan-500/20">
-            <span className="text-white">PJ</span>
-          </div>
-          <div>
-            <h1 className="text-base font-black tracking-tight">
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent neon-text">PJ.BOT</span>
-              <span className="text-gray-400 font-normal text-xs ml-2">AI Trading Agent</span>
-            </h1>
-            <p className="text-[9px] text-gray-600 tracking-widest uppercase">PJ.BOT v4.0.0 | Quantum Neural Trading System</p>
-          </div>
-        </div>
-
-        {/* Trading Type Selector */}
-        <div className="hidden lg:flex items-center gap-1 bg-black/30 rounded-xl p-1 border border-gray-800/50">
-          {tradingTypes.map(tt => (
+    <div className="min-h-screen bg-[#0a0e1a] text-white font-sans">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0e1a]/90 backdrop-blur-xl border-b border-cyan-900/30">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-3">
             <button
-              key={tt.id}
-              onClick={() => setTradingType(tt.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                tradingType === tt.id
-                  ? `bg-gradient-to-r ${tt.color} text-white shadow-lg`
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden p-2 rounded-lg bg-cyan-900/20 hover:bg-cyan-900/40 transition-colors"
             >
-              <span>{tt.icon}</span>
-              <span>{tt.label}</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="hidden md:flex items-center gap-2 text-[10px]">
-            <StatusDot connected={mt5Connected} label="MT5" />
-            <StatusDot connected={wsConnected} label="WS" />
-            <StatusDot connected={apiConnected} label="API" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm font-black shadow-lg shadow-cyan-500/30">
+              🤖
+            </div>
+            <div>
+              <h1 className="text-lg font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                AI Trading Agent
+              </h1>
+              <p className="text-[10px] text-gray-500 tracking-widest uppercase">Rangkuman Lengkap & Komprehensif</p>
+            </div>
           </div>
-          <button
-            onClick={() => setIsAgentActive(!isAgentActive)}
-            className={`relative px-4 py-1.5 rounded-lg text-xs font-bold transition-all overflow-hidden ${
-              isAgentActive
-                ? 'bg-gradient-to-r from-red-600 to-orange-600 shadow-lg shadow-red-600/30'
-                : 'bg-gradient-to-r from-cyan-600 to-blue-600 shadow-lg shadow-cyan-600/30'
-            }`}
-          >
-            {isAgentActive && <div className="absolute inset-0 animate-wave bg-gradient-to-r from-transparent via-white/20 to-transparent" />}
-            <span className="relative">{isAgentActive ? '⏹ STOP AGENT' : '▶ START AGENT'}</span>
-          </button>
+          <div className="hidden md:flex items-center gap-2">
+            <span className="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs border border-green-500/20">
+              ● Live Documentation
+            </span>
+          </div>
         </div>
       </header>
 
-      {/* Mobile Trading Type Selector */}
-      <div className="lg:hidden flex items-center gap-1 px-4 py-2 bg-black/30 border-b border-gray-800/30 overflow-x-auto">
-        {tradingTypes.map(tt => (
-          <button
-            key={tt.id}
-            onClick={() => setTradingType(tt.id)}
-            className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs whitespace-nowrap transition-all ${
-              tradingType === tt.id
-                ? `bg-gradient-to-r ${tt.color} text-white`
-                : 'text-gray-400 bg-white/5'
-            }`}
-          >
-            <span>{tt.icon}</span>
-            <span>{tt.label}</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex pt-16">
         {/* Sidebar */}
-        <nav className="w-14 lg:w-44 glass-panel border-r border-cyan-900/10 flex flex-col py-4 gap-0.5">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2.5 px-3 py-2.5 mx-1.5 rounded-lg text-xs transition-all ${
-                activeTab === tab.id
-                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-lg shadow-cyan-500/5'
-                  : 'text-gray-500 hover:text-cyan-300 hover:bg-white/3'
-              }`}
-            >
-              <span className="text-base w-5 text-center">{tab.icon}</span>
-              <span className="hidden lg:inline font-medium">{tab.label}</span>
-            </button>
-          ))}
-          <div className="mt-auto px-2 py-3">
-            <div className="text-[9px] text-gray-600 text-center space-y-1">
-              <div className={isAgentActive ? 'text-cyan-400 animate-pulse' : ''}>
-                {isAgentActive ? '● AGENT ACTIVE' : '○ IDLE'}
-              </div>
-              <div className="text-[8px] text-gray-700">{currentTrading.label} Mode</div>
-            </div>
-          </div>
-        </nav>
+        <aside className={`fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-[#0d1220]/95 backdrop-blur-xl border-r border-cyan-900/20 overflow-y-auto transition-transform z-40 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+          <nav className="p-3 space-y-1">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => { setActiveSection(section.id); setSidebarOpen(false); }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
+                  activeSection === section.id
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/10 text-cyan-300 border border-cyan-500/30 shadow-lg shadow-cyan-500/5'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span className="text-base">{section.icon}</span>
+                <span className="font-medium">{section.label}</span>
+              </button>
+            ))}
+          </nav>
+        </aside>
+
+        {/* Overlay for mobile sidebar */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        )}
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-3 lg:p-4 scrollbar-thin">
-          {/* Trading Type Info Bar */}
-          <div className={`mb-4 glass-panel rounded-xl p-3 flex items-center justify-between border-l-2 ${
-            tradingType === 'saham' ? 'border-l-blue-500' :
-            tradingType === 'crypto' ? 'border-l-orange-500' :
-            tradingType === 'forex' ? 'border-l-green-500' :
-            'border-l-purple-500'
-          }`}>
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">{currentTrading.icon}</span>
-              <div>
-                <h2 className="text-sm font-bold text-white">{currentTrading.desc}</h2>
-                <p className="text-[10px] text-gray-500">Active instruments: {currentTrading.pairs.join(' • ')}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {currentTrading.pairs.slice(0, 3).map(p => (
-                <span key={p} className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400 font-mono">{p}</span>
-              ))}
-            </div>
-          </div>
-
-          {activeTab === 'dashboard' && <DashboardPanel isActive={isAgentActive} tradingType={tradingType} />}
-          {activeTab === 'parameters' && <ParametersPanel tradingType={tradingType} />}
-          {activeTab === 'connection' && (
-            <ConnectionPanel
-              mt5Connected={mt5Connected} setMt5Connected={setMt5Connected}
-              wsConnected={wsConnected} setWsConnected={setWsConnected}
-              apiConnected={apiConnected} setApiConnected={setApiConnected}
-            />
-          )}
-          {activeTab === 'chart' && <ChartPanel tradingType={tradingType} />}
-          {activeTab === 'stresstest' && <StressTestPanel />}
-          {activeTab === 'aimodels' && <AIModelsPanel />}
-          {activeTab === 'terminal' && <TerminalPanel isActive={isAgentActive} />}
-          {activeTab === 'agents' && <MultiAgentPanel isActive={isAgentActive} />}
+        <main className="flex-1 min-h-[calc(100vh-4rem)] p-4 md:p-8 lg:p-12 max-w-5xl">
+          {activeSection === 'overview' && <OverviewSection />}
+          {activeSection === 'architecture' && <ArchitectureSection />}
+          {activeSection === 'components' && <ComponentsSection />}
+          {activeSection === 'ai-types' && <AITypesSection />}
+          {activeSection === 'strategies' && <StrategiesSection />}
+          {activeSection === 'ml-models' && <MLModelsSection />}
+          {activeSection === 'data' && <DataSection />}
+          {activeSection === 'risk' && <RiskSection />}
+          {activeSection === 'backtesting' && <BacktestingSection />}
+          {activeSection === 'deployment' && <DeploymentSection />}
+          {activeSection === 'multi-agent' && <MultiAgentSection />}
+          {activeSection === 'integration' && <IntegrationSection />}
+          {activeSection === 'security' && <SecuritySection />}
+          {activeSection === 'challenges' && <ChallengesSection />}
+          {activeSection === 'trends' && <TrendsSection />}
         </main>
       </div>
     </div>
   );
 }
 
-function StatusDot({ connected, label }: { connected: boolean; label: string }) {
-  return (
-    <div className="flex items-center gap-1">
-      <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-green-400 shadow-sm shadow-green-400/50' : 'bg-red-400'}`} />
-      <span className="text-gray-500">{label}</span>
-    </div>
-  );
-}
+// Section Components
 
-/* ==================== DASHBOARD ==================== */
-function DashboardPanel({ isActive, tradingType }: { isActive: boolean; tradingType: TradingType }) {
-  const currentTrading = tradingTypes.find(t => t.id === tradingType)!;
+function OverviewSection() {
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-12 gap-3">
-      {/* Robot + Stats */}
-      <div className="xl:col-span-4 glass-panel-accent rounded-2xl p-5 flex flex-col items-center justify-center min-h-[420px] relative overflow-hidden">
-        <div className="absolute inset-0 hex-pattern opacity-20" />
-        <h3 className="text-cyan-400 font-bold mb-2 text-[10px] uppercase tracking-[0.2em] relative z-10">AI Agent Core</h3>
-        <div className="relative z-10">
-          <RobotAnimation isActive={isActive} size="lg" />
-        </div>
-        <div className="mt-4 text-center relative z-10">
-          <p className={`text-xs ${isActive ? 'text-cyan-400 neon-text' : 'text-gray-600'}`}>
-            {isActive ? '🔥 Agentic Mode Active — Processing...' : 'Awaiting Activation'}
+    <div className="space-y-8 animate-fadeIn">
+      <div>
+        <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+          📖 Pengertian AI Trading Agent
+        </h2>
+        <div className="bg-gradient-to-br from-cyan-900/20 to-blue-900/20 rounded-2xl p-6 border border-cyan-500/20">
+          <p className="text-gray-300 text-lg leading-relaxed">
+            <strong className="text-cyan-300">AI Trading Agent</strong> adalah sistem perangkat lunak berbasis kecerdasan buatan (Artificial Intelligence) yang dirancang untuk melakukan analisis pasar keuangan dan mengeksekusi perdagangan (trading) secara otomatis tanpa intervensi manusia secara langsung.
           </p>
-          {isActive && (
-            <div className="mt-2 flex items-center justify-center gap-0.5">
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className="w-0.5 bg-gradient-to-t from-cyan-500 to-blue-400 rounded-full animate-pulse"
-                  style={{ height: `${Math.random() * 20 + 4}px`, animationDelay: `${i * 0.08}s` }} />
-              ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-xl font-bold text-white mb-4">✨ Karakteristik Utama</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { icon: '🎯', title: 'Otonom', desc: 'Mampu membuat keputusan trading secara mandiri' },
+            { icon: '🔄', title: 'Adaptif', desc: 'Menyesuaikan diri dengan kondisi pasar yang berubah' },
+            { icon: '⚡', title: 'Real-time', desc: 'Memproses data dan mengeksekusi order dalam milidetik' },
+            { icon: '📊', title: 'Data-driven', desc: 'Keputusan berdasarkan analisis data kuantitatif' },
+            { icon: '🌐', title: 'Multi-aset', desc: 'Dapat trading di berbagai instrumen (saham, forex, crypto, komoditas)' },
+          ].map((item, i) => (
+            <div key={i} className="bg-[#111827] rounded-xl p-4 border border-gray-800 hover:border-cyan-500/30 transition-all">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{item.icon}</span>
+                <div>
+                  <h4 className="font-bold text-white">{item.title}</h4>
+                  <p className="text-sm text-gray-400">{item.desc}</p>
+                </div>
+              </div>
             </div>
-          )}
+          ))}
         </div>
       </div>
 
-      {/* Live Stats */}
-      <div className="xl:col-span-4 glass-panel rounded-2xl p-5">
-        <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">Live Statistics — {currentTrading.label}</h3>
-        <div className="space-y-2">
-          <StatRow label="Total Trades Today" value="47" change="+12" />
-          <StatRow label="Win Rate" value="72.3%" change="+2.1%" />
-          <StatRow label="Profit Factor" value="2.14" change="+0.3" />
-          <StatRow label="Sharpe Ratio" value="1.87" change="+0.12" />
-          <StatRow label="Max Drawdown" value="4.2%" change="-0.8%" />
-          <StatRow label="Open Positions" value="3" change="" />
-          <StatRow label="Daily P&L" value="+$1,247.50" change="+$342" positive />
-          <StatRow label="AI Confidence" value="87.3%" change="+5.2%" />
-        </div>
-        {/* Mini chart */}
-        <div className="mt-4 h-16 relative">
-          <svg viewBox="0 0 200 50" className="w-full h-full">
-            <defs>
-              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(0,200,255,0.3)" />
-                <stop offset="100%" stopColor="rgba(0,200,255,0)" />
-              </linearGradient>
-            </defs>
-            <path d="M0 40 Q20 35 40 30 T80 25 T120 20 T160 15 T200 10 V50 H0 Z" fill="url(#chartGrad)" />
-            <path d="M0 40 Q20 35 40 30 T80 25 T120 20 T160 15 T200 10" fill="none" stroke="#00d4ff" strokeWidth="1.5" />
-          </svg>
-        </div>
-      </div>
-
-      {/* Command Terminal */}
-      <div className="xl:col-span-4 glass-panel rounded-2xl p-4 flex flex-col">
-        <h3 className="text-cyan-400 font-bold mb-2 text-[10px] uppercase tracking-[0.2em]">Command Terminal</h3>
-        <CommandPrompt isActive={isActive} />
-      </div>
-
-      {/* Active Signals */}
-      <div className="xl:col-span-8 glass-panel rounded-2xl p-5">
-        <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">Active Trading Signals — {currentTrading.label}</h3>
+      <div>
+        <h3 className="text-xl font-bold text-white mb-4">📊 Perbedaan dengan Trading Bot Konvensional</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="w-full text-sm">
             <thead>
-              <tr className="text-gray-600 border-b border-gray-800/50">
-                <th className="text-left py-2 font-medium">Instrument</th>
-                <th className="text-left py-2 font-medium">Direction</th>
-                <th className="text-left py-2 font-medium">Entry</th>
-                <th className="text-left py-2 font-medium">SL/TP</th>
-                <th className="text-left py-2 font-medium">Confidence</th>
-                <th className="text-left py-2 font-medium">AI Model</th>
-                <th className="text-left py-2 font-medium">Status</th>
+              <tr className="border-b border-gray-700">
+                <th className="text-left py-3 px-4 text-cyan-400">Aspek</th>
+                <th className="text-left py-3 px-4 text-gray-400">Trading Bot Biasa</th>
+                <th className="text-left py-3 px-4 text-green-400">AI Trading Agent</th>
               </tr>
             </thead>
             <tbody>
-              {currentTrading.pairs.slice(0, 5).map((pair, i) => (
-                <SignalRow key={pair} pair={pair} dir={i % 3 === 0 ? 'BUY' : i % 3 === 1 ? 'SELL' : 'BUY'}
-                  entry={(Math.random() * 100 + 50).toFixed(2)}
-                  sltp={`${(Math.random() * 100 + 40).toFixed(2)}/${(Math.random() * 100 + 60).toFixed(2)}`}
-                  conf={`${(Math.random() * 20 + 70).toFixed(0)}%`}
-                  model={['GPT-4o', 'LSTM', 'Claude-3.5', 'Gemini', 'XGBoost'][i % 5]}
-                  status={['Active', 'Pending', 'Active', 'Active', 'Monitoring'][i % 5]} />
+              {[
+                ['Keputusan', 'Rule-based (IF-THEN)', 'Adaptive & Learning'],
+                ['Adaptasi', 'Statis', 'Dinamis'],
+                ['Analisis', 'Teknikal sederhana', 'Multi-dimensional'],
+                ['Risk Mgmt', 'Fixed rules', 'Dynamic optimization'],
+                ['Learning', 'Tidak ada', 'Continuous learning'],
+              ].map((row, i) => (
+                <tr key={i} className="border-b border-gray-800/50 hover:bg-white/5">
+                  <td className="py-3 px-4 font-medium text-white">{row[0]}</td>
+                  <td className="py-3 px-4 text-gray-400">{row[1]}</td>
+                  <td className="py-3 px-4 text-green-300">{row[2]}</td>
+                </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="xl:col-span-4 glass-panel rounded-2xl p-5">
-        <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">Quick Actions</h3>
-        <div className="grid grid-cols-2 gap-2">
+      <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-2xl p-6 border border-purple-500/20">
+        <h3 className="text-lg font-bold text-purple-300 mb-3">🎯 Kesimpulan</h3>
+        <p className="text-gray-300 leading-relaxed">
+          AI Trading Agent merupakan evolusi dari trading otomatis tradisional. Dengan kemampuan belajar dan adaptasi, sistem ini menawarkan keputusan berbasis data (bukan emosi), eksekusi 24/7, analisis multi-dimensional real-time, risk management dinamis, dan kemampuan memproses informasi dalam volume besar.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ArchitectureSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        🏗️ Arsitektur Sistem
+      </h2>
+
+      <div className="bg-[#111827] rounded-2xl p-6 border border-gray-800">
+        <h3 className="text-lg font-bold text-white mb-4">Diagram Alur Sistem</h3>
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 py-6">
           {[
-            { label: 'Scan Market', icon: '◈' },
-            { label: 'Backtest', icon: '◇' },
-            { label: 'Deploy', icon: '⬡' },
-            { label: 'Risk Analysis', icon: '⬢' },
-            { label: 'News Feed', icon: '◉' },
-            { label: 'Portfolio', icon: '◊' },
-          ].map(a => (
-            <button key={a.label} className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/3 hover:bg-cyan-500/10 border border-gray-800/50 hover:border-cyan-500/30 transition-all text-xs text-gray-400 hover:text-cyan-400">
-              <span className="text-cyan-500">{a.icon}</span>
-              <span>{a.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StatRow({ label, value, change, positive }: { label: string; value: string; change: string; positive?: boolean }) {
-  return (
-    <div className="flex items-center justify-between py-1.5 border-b border-gray-800/30">
-      <span className="text-gray-500 text-[11px]">{label}</span>
-      <div className="flex items-center gap-2">
-        <span className="text-white text-xs font-mono font-medium">{value}</span>
-        {change && (
-          <span className={`text-[9px] px-1 py-0.5 rounded ${
-            positive !== false && change.startsWith('+') ? 'text-green-400 bg-green-500/10' :
-            change.startsWith('-') ? 'text-red-400 bg-red-500/10' : 'text-gray-600'
-          }`}>{change}</span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SignalRow({ pair, dir, entry, sltp, conf, model, status }: { pair: string; dir: string; entry: string; sltp: string; conf: string; model: string; status: string }) {
-  return (
-    <tr className="border-b border-gray-800/20 hover:bg-cyan-500/3 transition-colors">
-      <td className="py-2.5 font-mono text-white text-[11px]">{pair}</td>
-      <td className={`py-2.5 font-bold text-[11px] ${dir === 'BUY' ? 'text-green-400' : 'text-red-400'}`}>
-        <span className={`px-1.5 py-0.5 rounded ${dir === 'BUY' ? 'bg-green-500/10' : 'bg-red-500/10'}`}>{dir}</span>
-      </td>
-      <td className="py-2.5 font-mono text-gray-300 text-[11px]">{entry}</td>
-      <td className="py-2.5 font-mono text-gray-500 text-[11px]">{sltp}</td>
-      <td className="py-2.5"><span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded text-[10px] font-mono">{conf}</span></td>
-      <td className="py-2.5 text-purple-400 text-[11px]">{model}</td>
-      <td className="py-2.5">
-        <span className={`px-2 py-0.5 rounded-full text-[9px] font-medium ${
-          status === 'Active' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
-          status === 'Pending' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' :
-          'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-        }`}>{status}</span>
-      </td>
-    </tr>
-  );
-}
-
-/* ==================== PARAMETERS ==================== */
-function ParametersPanel({ tradingType }: { tradingType: TradingType }) {
-  const currentTrading = tradingTypes.find(t => t.id === tradingType)!;
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-      <ParamCard title="📐 Risk Management" icon="⬡">
-        <ParamInput label="Max Risk Per Trade (%)" defaultValue="2.0" />
-        <ParamInput label="Max Daily Drawdown (%)" defaultValue="5.0" />
-        <ParamInput label="Max Open Positions" defaultValue="5" />
-        <ParamInput label="Stop Loss" defaultValue={tradingType === 'crypto' ? '500' : '30'} />
-        <ParamInput label="Take Profit" defaultValue={tradingType === 'crypto' ? '1000' : '60'} />
-        <ParamInput label="Trailing Stop" defaultValue={tradingType === 'forex' ? '20' : '100'} />
-        <ParamToggle label="Dynamic Lot Size" defaultOn />
-        <ParamToggle label="Enable Hedging" defaultOn={false} />
-      </ParamCard>
-
-      <ParamCard title="📊 Strategy Parameters" icon="◈">
-        <ParamSelect label="Strategy Type" options={['Trend Following', 'Mean Reversion', 'Breakout', 'Scalping', 'Swing', 'Arbitrage']} />
-        <ParamSelect label="Timeframe" options={['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1']} />
-        <ParamInput label="RSI Period" defaultValue="14" />
-        <ParamInput label="RSI Overbought" defaultValue="70" />
-        <ParamInput label="RSI Oversold" defaultValue="30" />
-        <ParamInput label="MACD Fast EMA" defaultValue="12" />
-        <ParamInput label="MACD Slow EMA" defaultValue="26" />
-        <ParamInput label="ATR Period" defaultValue="14" />
-      </ParamCard>
-
-      <ParamCard title="🧠 AI Parameters" icon="◊">
-        <ParamInput label="Confidence Threshold (%)" defaultValue="75" />
-        <ParamInput label="Lookback Period (candles)" defaultValue="100" />
-        <ParamInput label="Prediction Horizon" defaultValue="24" />
-        <ParamInput label="Learning Rate" defaultValue="0.001" />
-        <ParamInput label="Batch Size" defaultValue="32" />
-        <ParamInput label="Epochs" defaultValue="100" />
-        <ParamToggle label="Ensemble Voting" defaultOn />
-        <ParamToggle label="Auto-Recalibrate" defaultOn />
-      </ParamCard>
-
-      <ParamCard title={`${currentTrading.icon} ${currentTrading.label} Instruments`} icon="◉">
-        {currentTrading.pairs.map(p => (
-          <ParamToggle key={p} label={p} defaultOn />
-        ))}
-        {tradingType === 'saham' && <ParamToggle label="ETF Trading" defaultOn={false} />}
-        {tradingType === 'crypto' && <ParamToggle label="DeFi Tokens" defaultOn={false} />}
-        {tradingType === 'forex' && <ParamToggle label="Exotic Pairs" defaultOn={false} />}
-        {tradingType === 'komoditas' && <ParamToggle label="Agricultural" defaultOn={false} />}
-        <ParamInput label="Max Spread" defaultValue={tradingType === 'crypto' ? '50' : '5'} />
-      </ParamCard>
-
-      <ParamCard title="⏰ Session Settings" icon="⬢">
-        <ParamToggle label="Asian Session" defaultOn={tradingType === 'crypto'} />
-        <ParamToggle label="London Session" defaultOn={tradingType !== 'crypto'} />
-        <ParamToggle label="NY Session" defaultOn={tradingType !== 'crypto'} />
-        <ParamToggle label="24/7 Mode (Crypto)" defaultOn={tradingType === 'crypto'} />
-        <ParamToggle label="Avoid News Events" defaultOn />
-        <ParamInput label="News Buffer (min)" defaultValue="30" />
-        <ParamSelect label="Friday Close" options={['Never', 'Before Close', 'At Close']} />
-      </ParamCard>
-
-      <ParamCard title="🔔 Notifications" icon="◇">
-        <ParamToggle label="Trade Opened" defaultOn />
-        <ParamToggle label="Trade Closed" defaultOn />
-        <ParamToggle label="Drawdown Warning" defaultOn />
-        <ParamToggle label="AI Signal Alert" defaultOn />
-        <ParamToggle label="Email Alerts" defaultOn={false} />
-        <ParamToggle label="Telegram Bot" defaultOn />
-        <ParamInput label="Telegram Chat ID" defaultValue="" />
-      </ParamCard>
-    </div>
-  );
-}
-
-function ParamCard({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
-  return (
-    <div className="glass-panel rounded-2xl p-5">
-      <h3 className="text-cyan-400 font-bold mb-4 text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
-        <span className="text-cyan-500/50">{icon}</span>{title}
-      </h3>
-      <div className="space-y-3">{children}</div>
-    </div>
-  );
-}
-
-function ParamInput({ label, defaultValue }: { label: string; defaultValue: string }) {
-  return (
-    <div>
-      <label className="text-[10px] text-gray-500 block mb-1 uppercase tracking-wider">{label}</label>
-      <input type="text" defaultValue={defaultValue}
-        className="w-full bg-black/40 border border-gray-800/50 rounded-lg px-3 py-1.5 text-xs text-white focus:border-cyan-500/50 focus:outline-none focus:shadow-lg focus:shadow-cyan-500/5 transition-all" />
-    </div>
-  );
-}
-
-function ParamToggle({ label, defaultOn }: { label: string; defaultOn: boolean }) {
-  const [on, setOn] = useState(defaultOn);
-  return (
-    <div className="flex items-center justify-between">
-      <label className="text-[10px] text-gray-400">{label}</label>
-      <button onClick={() => setOn(!on)}
-        className={`w-9 h-4.5 rounded-full transition-all relative ${on ? 'bg-cyan-600/80 shadow-sm shadow-cyan-500/30' : 'bg-gray-800'}`}
-        style={{ height: '18px' }}>
-        <div className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow transition-all ${on ? 'left-[18px]' : 'left-0.5'}`} />
-      </button>
-    </div>
-  );
-}
-
-function ParamSelect({ label, options }: { label: string; options: string[] }) {
-  return (
-    <div>
-      <label className="text-[10px] text-gray-500 block mb-1 uppercase tracking-wider">{label}</label>
-      <select className="w-full bg-black/40 border border-gray-800/50 rounded-lg px-3 py-1.5 text-xs text-white focus:border-cyan-500/50 focus:outline-none transition-all">
-        {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-      </select>
-    </div>
-  );
-}
-
-/* ==================== CONNECTION ==================== */
-function ConnectionPanel({ mt5Connected, setMt5Connected, wsConnected, setWsConnected, apiConnected, setApiConnected }: {
-  mt5Connected: boolean; setMt5Connected: (v: boolean) => void;
-  wsConnected: boolean; setWsConnected: (v: boolean) => void;
-  apiConnected: boolean; setApiConnected: (v: boolean) => void;
-}) {
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-      <ConnectionCard title="🔌 MetaTrader 5" connected={mt5Connected} onToggle={() => setMt5Connected(!mt5Connected)}>
-        <ParamInput label="Server Address" defaultValue="demo.metaquotes.net" />
-        <ParamInput label="Port" defaultValue="443" />
-        <ParamInput label="Login ID" defaultValue="51234567" />
-        <div><label className="text-[10px] text-gray-500 block mb-1 uppercase tracking-wider">Password</label>
-          <input type="password" defaultValue="password" className="w-full bg-black/40 border border-gray-800/50 rounded-lg px-3 py-1.5 text-xs text-white focus:border-cyan-500/50 focus:outline-none" /></div>
-        <ParamSelect label="Account Type" options={['Demo', 'Live', 'Contest']} />
-        <ParamSelect label="Protocol" options={['TCP/IP', 'WebSocket', 'REST']} />
-      </ConnectionCard>
-
-      <ConnectionCard title="🌐 WebSocket" connected={wsConnected} onToggle={() => setWsConnected(!wsConnected)}>
-        <ParamInput label="WebSocket URL" defaultValue="wss://api.pjbot.ai/ws" />
-        <ParamInput label="API Key" defaultValue="sk-xxxx-xxxx" />
-        <ParamInput label="Reconnect (ms)" defaultValue="5000" />
-        <ParamInput label="Heartbeat (ms)" defaultValue="30000" />
-        <ParamToggle label="Auto Reconnect" defaultOn />
-        <ParamToggle label="SSL/TLS" defaultOn />
-      </ConnectionCard>
-
-      <ConnectionCard title="🔗 REST API" connected={apiConnected} onToggle={() => setApiConnected(!apiConnected)}>
-        <ParamInput label="Base URL" defaultValue="https://api.pjbot.ai/v4" />
-        <ParamInput label="API Token" defaultValue="Bearer eyJhbGci..." />
-        <ParamInput label="Timeout (ms)" defaultValue="10000" />
-        <ParamInput label="Rate Limit (req/min)" defaultValue="60" />
-        <ParamSelect label="Auth Method" options={['Bearer', 'API Key', 'OAuth 2.0']} />
-        <ParamToggle label="Enable Retry" defaultOn />
-      </ConnectionCard>
-
-      <ConnectionCard title="📱 Web/App Integration" connected={true} onToggle={() => {}}>
-        <ParamSelect label="Platform" options={['Web Dashboard', 'iOS App', 'Android App', 'Desktop', 'Telegram Bot', 'Discord Bot']} />
-        <ParamInput label="Webhook URL" defaultValue="https://hooks.pjbot.ai/trading" />
-        <ParamInput label="Callback URL" defaultValue="https://app.pjbot.ai/callback" />
-        <ParamToggle label="Web Push" defaultOn />
-        <ParamToggle label="Real-time Updates" defaultOn />
-        <ParamInput label="Refresh (ms)" defaultValue="1000" />
-      </ConnectionCard>
-    </div>
-  );
-}
-
-function ConnectionCard({ title, connected, onToggle, children }: { title: string; connected: boolean; onToggle: () => void; children: React.ReactNode }) {
-  return (
-    <div className="glass-panel rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-cyan-400 font-bold text-[10px] uppercase tracking-[0.2em]">{title}</h3>
-        <span className={`text-[9px] px-2 py-0.5 rounded-full font-medium ${connected ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
-          {connected ? '● Connected' : '● Disconnected'}
-        </span>
-      </div>
-      <div className="space-y-3">{children}</div>
-      <button onClick={onToggle}
-        className={`w-full mt-4 py-2 rounded-lg text-xs font-bold transition-all ${
-          connected ? 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20' : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20'
-        }`}>
-        {connected ? '⏹ Disconnect' : '▶ Connect'}
-      </button>
-    </div>
-  );
-}
-
-/* ==================== CHART SCREENING ==================== */
-function ChartPanel({ tradingType }: { tradingType: TradingType }) {
-  const currentTrading = tradingTypes.find(t => t.id === tradingType)!;
-  const [selectedPair, setSelectedPair] = useState(currentTrading.pairs[0]);
-
-  return (
-    <div className="grid grid-cols-1 xl:grid-cols-4 gap-3">
-      <div className="glass-panel rounded-2xl p-4">
-        <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">{currentTrading.icon} {currentTrading.label} Pairs</h3>
-        <div className="space-y-1">
-          {currentTrading.pairs.map(pair => (
-            <button key={pair} onClick={() => setSelectedPair(pair)}
-              className={`w-full text-left px-3 py-2.5 rounded-xl text-xs transition-all flex justify-between items-center ${
-                selectedPair === pair ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' : 'text-gray-400 hover:bg-white/3 border border-transparent'
-              }`}>
-              <span className="font-mono font-medium">{pair}</span>
-              <span className={`text-[10px] font-mono ${Math.random() > 0.5 ? 'text-green-400' : 'text-red-400'}`}>
-                {Math.random() > 0.5 ? '▲' : '▼'} {(Math.random() * 3).toFixed(2)}%
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="xl:col-span-3 glass-panel rounded-2xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-cyan-400 font-bold text-[10px] uppercase tracking-[0.2em]">{selectedPair} — Chart Analysis</h3>
-            <p className="text-[10px] text-gray-600 mt-0.5">AI-Powered Technical Analysis</p>
-          </div>
-          <div className="flex gap-1">
-            {['M5', 'M15', 'H1', 'H4', 'D1'].map(tf => (
-              <button key={tf} className="px-2.5 py-1 text-[10px] rounded-lg bg-white/3 text-gray-500 hover:text-cyan-400 hover:bg-cyan-500/10 border border-transparent hover:border-cyan-500/20 transition-all">{tf}</button>
-            ))}
-          </div>
-        </div>
-
-        {/* Chart */}
-        <div className="relative h-56 bg-black/30 rounded-xl border border-gray-800/30 overflow-hidden">
-          <svg viewBox="0 0 800 220" className="w-full h-full">
-            <defs>
-              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(0,200,255,0.15)" />
-                <stop offset="100%" stopColor="rgba(0,200,255,0)" />
-              </linearGradient>
-            </defs>
-            {/* Grid */}
-            {[...Array(5)].map((_, i) => <line key={`h${i}`} x1="0" y1={i * 44 + 22} x2="800" y2={i * 44 + 22} stroke="rgba(0,180,255,0.04)" />)}
-            {[...Array(12)].map((_, i) => <line key={`v${i}`} x1={i * 67 + 33} y1="0" x2={i * 67 + 33} y2="220" stroke="rgba(0,180,255,0.04)" />)}
-            {/* Candles */}
-            {generateCandles().map((c, i) => (
-              <g key={i}>
-                <line x1={i * 25 + 30} y1={c.high} x2={i * 25 + 30} y2={c.low} stroke={c.bullish ? '#00cc88' : '#ff4466'} strokeWidth="1" />
-                <rect x={i * 25 + 26} y={Math.min(c.open, c.close)} width="8" height={Math.max(2, Math.abs(c.close - c.open))} fill={c.bullish ? '#00cc88' : '#ff4466'} rx="1" />
-              </g>
-            ))}
-            {/* MA */}
-            <path d={generateMALine()} fill="none" stroke="rgba(0,200,255,0.5)" strokeWidth="1.5" strokeDasharray="4 2" />
-            {/* Signal */}
-            <polygon points="400,170 408,185 392,185" fill="#00ffaa" opacity="0.8">
-              <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1.5s" repeatCount="indefinite" />
-            </polygon>
-          </svg>
-          <div className="absolute left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent animate-scan-line" />
-        </div>
-
-        {/* Indicators */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
-          {[
-            { label: 'RSI (14)', value: '62.4', status: 'neutral' },
-            { label: 'MACD', value: '+0.0012', status: 'bullish' },
-            { label: 'ATR (14)', value: '45.2', status: 'neutral' },
-            { label: 'ADX', value: '28.7', status: 'bullish' },
-            { label: 'Stochastic', value: '71.2', status: 'neutral' },
-            { label: 'Bollinger', value: 'Upper', status: 'neutral' },
-            { label: 'Volume', value: '+23%', status: 'bullish' },
-            { label: 'AI Score', value: '87.3', status: 'bullish' },
-          ].map(ind => (
-            <div key={ind.label} className={`p-2 rounded-xl border ${
-              ind.status === 'bullish' ? 'border-green-500/20 bg-green-500/5' : 'border-yellow-500/20 bg-yellow-500/5'
-            }`}>
-              <div className="text-[9px] text-gray-600 uppercase">{ind.label}</div>
-              <div className={`text-xs font-mono font-bold ${ind.status === 'bullish' ? 'text-green-400' : 'text-yellow-400'}`}>{ind.value}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function generateCandles() {
-  const candles = [];
-  let price = 110;
-  for (let i = 0; i < 30; i++) {
-    const change = (Math.random() - 0.47) * 12;
-    const open = price;
-    const close = price + change;
-    const high = Math.max(open, close) + Math.random() * 6;
-    const low = Math.min(open, close) - Math.random() * 6;
-    candles.push({ open, close, high, low, bullish: close > open });
-    price = close;
-  }
-  return candles;
-}
-
-function generateMALine() {
-  let d = 'M 30 120';
-  for (let i = 1; i < 30; i++) {
-    const y = 120 + Math.sin(i * 0.25) * 25 + (Math.random() - 0.5) * 8;
-    d += ` L ${i * 25 + 30} ${y}`;
-  }
-  return d;
-}
-
-/* ==================== STRESS TEST ==================== */
-function StressTestPanel() {
-  const [running, setRunning] = useState(false);
-  const [progress, setProgress] = useState(0);
-
-  const runTest = () => {
-    setRunning(true);
-    setProgress(0);
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) { clearInterval(interval); setRunning(false); return 100; }
-        return prev + 2;
-      });
-    }, 80);
-  };
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-      <div className="glass-panel rounded-2xl p-5">
-        <h3 className="text-cyan-400 font-bold mb-4 text-[10px] uppercase tracking-[0.2em]">⚡ API Stress Test</h3>
-        <div className="space-y-3">
-          <ParamInput label="Target URL" defaultValue="https://api.pjbot.ai/v4/trade" />
-          <ParamInput label="Concurrent Requests" defaultValue="1000" />
-          <ParamInput label="Duration (seconds)" defaultValue="60" />
-          <ParamSelect label="HTTP Method" options={['GET', 'POST', 'PUT']} />
-          <ParamToggle label="Randomize Payload" defaultOn />
-          <button onClick={runTest} disabled={running}
-            className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all ${running ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20'}`}>
-            {running ? `⚡ Running... ${progress}%` : '▶ Run Stress Test'}
-          </button>
-          {running && (
-            <div className="w-full h-1.5 bg-gray-800/50 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-75 rounded-full" style={{ width: `${progress}%` }} />
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="glass-panel rounded-2xl p-5">
-        <h3 className="text-cyan-400 font-bold mb-4 text-[10px] uppercase tracking-[0.2em]">📊 Test Results</h3>
-        <div className="space-y-2">
-          {[
-            { l: 'Total Requests', v: '60,000' },
-            { l: 'Success Rate', v: '99.7%', c: 'green' },
-            { l: 'Avg Response', v: '12ms' },
-            { l: 'P95 Response', v: '45ms' },
-            { l: 'P99 Response', v: '120ms' },
-            { l: 'Max Response', v: '340ms', c: 'yellow' },
-            { l: 'Req/sec', v: '1,000' },
-            { l: 'Error Rate', v: '0.3%', c: 'green' },
-            { l: 'Throughput', v: '2.4 MB/s' },
-            { l: 'CPU Usage', v: '45%', c: 'yellow' },
-          ].map(r => (
-            <div key={r.l} className="flex justify-between py-1 border-b border-gray-800/20">
-              <span className="text-[10px] text-gray-500">{r.l}</span>
-              <span className={`text-xs font-mono font-medium ${r.c === 'green' ? 'text-green-400' : r.c === 'yellow' ? 'text-yellow-400' : 'text-white'}`}>{r.v}</span>
+            { label: 'Data\nIngestion', color: 'from-blue-500 to-cyan-500', icon: '📥' },
+            { label: 'AI\nEngine', color: 'from-purple-500 to-pink-500', icon: '🧠' },
+            { label: 'Risk\nManager', color: 'from-orange-500 to-red-500', icon: '🛡️' },
+            { label: 'Execution\nEngine', color: 'from-green-500 to-emerald-500', icon: '⚡' },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <div className={`bg-gradient-to-br ${item.color} rounded-xl p-4 text-center min-w-[120px] shadow-lg`}>
+                <span className="text-2xl block mb-1">{item.icon}</span>
+                <span className="text-xs font-bold text-white whitespace-pre-line">{item.label}</span>
+              </div>
+              {i < 3 && <span className="text-cyan-400 text-2xl hidden md:block">→</span>}
             </div>
           ))}
         </div>
       </div>
 
-      <div className="glass-panel rounded-2xl p-5">
-        <h3 className="text-cyan-400 font-bold mb-4 text-[10px] uppercase tracking-[0.2em]">🔗 Connection Stress</h3>
+      <div>
+        <h3 className="text-xl font-bold text-white mb-4">Layer Arsitektur</h3>
         <div className="space-y-3">
-          <ParamInput label="MT5 Max Connections" defaultValue="100" />
-          <ParamInput label="WebSocket Max Clients" defaultValue="10000" />
-          <ParamInput label="DB Pool Size" defaultValue="50" />
-          <ParamToggle label="Test Failover" defaultOn />
-          <ParamToggle label="Test Reconnection" defaultOn />
-          <button className="w-full py-2.5 rounded-xl text-xs font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20">▶ Run Connection Test</button>
-        </div>
-      </div>
-
-      <div className="glass-panel rounded-2xl p-5">
-        <h3 className="text-cyan-400 font-bold mb-4 text-[10px] uppercase tracking-[0.2em]">🧠 AI Model Stress</h3>
-        <div className="space-y-3">
-          <ParamInput label="Inference req/sec" defaultValue="100" />
-          <ParamInput label="Batch Size" defaultValue="32" />
-          <ParamInput label="Max Latency (ms)" defaultValue="500" />
-          <ParamToggle label="GPU Acceleration" defaultOn />
-          <ParamSelect label="Scenario" options={['Normal', 'Peak', 'Spike', 'Soak']} />
-          <button className="w-full py-2.5 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20">▶ Run AI Stress Test</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ==================== AI MODELS ==================== */
-function AIModelsPanel() {
-  const models = [
-    { name: 'GPT-4o', provider: 'OpenAI', status: 'active', latency: '45ms', accuracy: '87.3%', desc: 'General Trading Analysis' },
-    { name: 'Claude-3.5', provider: 'Anthropic', status: 'active', latency: '38ms', accuracy: '85.1%', desc: 'Pattern Recognition' },
-    { name: 'Gemini-Pro', provider: 'Google', status: 'active', latency: '52ms', accuracy: '82.7%', desc: 'News Sentiment' },
-    { name: 'Custom-LSTM', provider: 'Internal', status: 'active', latency: '12ms', accuracy: '89.2%', desc: 'Time Series Prediction' },
-    { name: 'XGBoost', provider: 'Internal', status: 'standby', latency: '8ms', accuracy: '84.5%', desc: 'Risk Assessment' },
-    { name: 'Transformer-XL', provider: 'Internal', status: 'standby', latency: '25ms', accuracy: '86.8%', desc: 'Volatility Forecasting' },
-  ];
-
-  return (
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
-      <div className="xl:col-span-2 space-y-2">
-        <h3 className="text-cyan-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-3">🧠 AI Model Registry</h3>
-        {models.map((m, i) => (
-          <div key={i} className="glass-panel rounded-xl p-4 flex items-center justify-between hover:border-cyan-500/20 transition-all">
-            <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm ${m.status === 'active' ? 'bg-cyan-500/10 border border-cyan-500/20' : 'bg-gray-800/50 border border-gray-700/30'}`}>🤖</div>
+          {[
+            { layer: 'Data Layer', desc: 'Pengumpulan dan penyimpanan data pasar', icon: '💾', color: 'border-blue-500/30 bg-blue-500/5' },
+            { layer: 'Processing Layer', desc: 'Preprocessing dan feature engineering', icon: '⚙️', color: 'border-purple-500/30 bg-purple-500/5' },
+            { layer: 'AI/ML Layer', desc: 'Model inference dan signal generation', icon: '🧠', color: 'border-pink-500/30 bg-pink-500/5' },
+            { layer: 'Risk Layer', desc: 'Manajemen risiko dan position sizing', icon: '🛡️', color: 'border-orange-500/30 bg-orange-500/5' },
+            { layer: 'Execution Layer', desc: 'Order routing dan trade execution', icon: '⚡', color: 'border-green-500/30 bg-green-500/5' },
+            { layer: 'Monitoring Layer', desc: 'Logging, alerting, dan performance tracking', icon: '📊', color: 'border-cyan-500/30 bg-cyan-500/5' },
+          ].map((item, i) => (
+            <div key={i} className={`rounded-xl p-4 border ${item.color} flex items-center gap-4`}>
+              <span className="text-2xl">{item.icon}</span>
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-white text-xs font-bold">{m.name}</span>
-                  <span className={`text-[8px] px-1.5 py-0.5 rounded-full ${m.status === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>{m.status}</span>
-                </div>
-                <div className="text-[10px] text-gray-500">{m.desc} — {m.provider}</div>
+                <h4 className="font-bold text-white">{item.layer}</h4>
+                <p className="text-sm text-gray-400">{item.desc}</p>
               </div>
-            </div>
-            <div className="text-right">
-              <div className="text-[10px] text-gray-500">Lat: <span className="text-white font-mono">{m.latency}</span></div>
-              <div className="text-[10px] text-gray-500">Acc: <span className="text-cyan-400 font-mono">{m.accuracy}</span></div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="space-y-3">
-        <div className="glass-panel rounded-2xl p-5">
-          <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">🔀 AI Routing</h3>
-          <div className="space-y-3">
-            <ParamSelect label="Strategy" options={['Round Robin', 'Weighted', 'Priority', 'Latency-Based', 'Confidence-Based']} />
-            <ParamInput label="Fallback Model" defaultValue="Custom-LSTM" />
-            <ParamInput label="Max Retry" defaultValue="3" />
-            <ParamToggle label="Load Balancing" defaultOn />
-            <ParamToggle label="Auto Failover" defaultOn />
-          </div>
-        </div>
-        <div className="glass-panel rounded-2xl p-5">
-          <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">📐 Ensemble</h3>
-          <div className="space-y-3">
-            <ParamSelect label="Voting" options={['Majority', 'Weighted Avg', 'Stacking', 'Boosting']} />
-            <ParamInput label="Min Agreement (%)" defaultValue="60" />
-            <ParamToggle label="Meta-Learner" defaultOn />
-          </div>
-        </div>
-        <div className="glass-panel rounded-2xl p-5">
-          <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">🔑 API Keys</h3>
-          <div className="space-y-2">
-            <div><label className="text-[10px] text-gray-500 block mb-1">OpenAI</label><input type="password" defaultValue="sk-xxxx" className="w-full bg-black/40 border border-gray-800/50 rounded-lg px-3 py-1.5 text-[10px] text-white focus:border-cyan-500/50 focus:outline-none" /></div>
-            <div><label className="text-[10px] text-gray-500 block mb-1">Anthropic</label><input type="password" defaultValue="sk-ant-xxxx" className="w-full bg-black/40 border border-gray-800/50 rounded-lg px-3 py-1.5 text-[10px] text-white focus:border-cyan-500/50 focus:outline-none" /></div>
-            <div><label className="text-[10px] text-gray-500 block mb-1">Google AI</label><input type="password" defaultValue="AIza-xxxx" className="w-full bg-black/40 border border-gray-800/50 rounded-lg px-3 py-1.5 text-[10px] text-white focus:border-cyan-500/50 focus:outline-none" /></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ==================== TERMINAL ==================== */
-function TerminalPanel({ isActive }: { isActive: boolean }) {
-  return (
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
-      <div className="xl:col-span-2 flex flex-col gap-3">
-        <div className="glass-panel rounded-2xl p-4 flex-1">
-          <h3 className="text-cyan-400 font-bold mb-2 text-[10px] uppercase tracking-[0.2em]">💻 AI Agent Terminal</h3>
-          <CommandPrompt isActive={isActive} />
-        </div>
-        <div className="glass-panel rounded-2xl p-5">
-          <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">⚙️ Terminal Settings</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <ParamSelect label="Shell" options={['bash', 'zsh', 'powershell', 'custom']} />
-            <ParamInput label="Max History" defaultValue="10000" />
-            <ParamToggle label="Auto-Complete" defaultOn />
-            <ParamToggle label="Syntax Highlight" defaultOn />
-            <ParamSelect label="Font Size" options={['10px', '12px', '14px', '16px']} />
-            <ParamToggle label="Timestamps" defaultOn />
-          </div>
-        </div>
-      </div>
-      <div className="glass-panel rounded-2xl p-5">
-        <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">📋 System Logs</h3>
-        <div className="space-y-1 font-mono text-[9px] max-h-[500px] overflow-y-auto scrollbar-thin">
-          {[
-            { t: '14:23:01', l: 'INFO', m: 'Agent initialized' },
-            { t: '14:23:02', l: 'INFO', m: 'Loading AI models...' },
-            { t: '14:23:03', l: 'INFO', m: 'GPT-4o loaded (45ms)' },
-            { t: '14:23:04', l: 'INFO', m: 'LSTM model loaded (12ms)' },
-            { t: '14:23:05', l: 'WARN', m: 'High latency on Gemini' },
-            { t: '14:23:06', l: 'INFO', m: 'MT5 connected' },
-            { t: '14:23:07', l: 'INFO', m: 'Market data active' },
-            { t: '14:23:08', l: 'INFO', m: 'Scanning 28 pairs...' },
-            { t: '14:23:10', l: 'OK', m: 'Signal: EUR/USD BUY 87%' },
-            { t: '14:23:12', l: 'INFO', m: 'Order #12847563' },
-            { t: '14:23:15', l: 'INFO', m: 'Risk check passed' },
-            { t: '14:23:18', l: 'WARN', m: 'Spread widening GBP/JPY' },
-            { t: '14:23:20', l: 'INFO', m: 'Position +12 pips' },
-            { t: '14:23:25', l: 'OK', m: 'Signal: XAU/USD BUY 92%' },
-            { t: '14:23:30', l: 'ERR', m: 'REST timeout - retrying' },
-            { t: '14:23:31', l: 'INFO', m: 'Retry successful' },
-            { t: '14:23:35', l: 'INFO', m: 'P&L: +$342.50' },
-            { t: '14:23:40', l: 'INFO', m: 'Heartbeat OK' },
-          ].map((log, i) => (
-            <div key={i} className="flex gap-2 py-0.5 border-b border-gray-800/20">
-              <span className="text-gray-700">{log.t}</span>
-              <span className={`w-8 ${log.l === 'OK' ? 'text-green-400' : log.l === 'WARN' ? 'text-yellow-400' : log.l === 'ERR' ? 'text-red-400' : 'text-blue-400'}`}>{log.l}</span>
-              <span className="text-gray-400">{log.m}</span>
             </div>
           ))}
         </div>
@@ -850,103 +236,1038 @@ function TerminalPanel({ isActive }: { isActive: boolean }) {
   );
 }
 
-/* ==================== MULTI AGENT ==================== */
-function MultiAgentPanel({ isActive }: { isActive: boolean }) {
-  const agents = [
-    { name: 'Agent-Alpha', role: 'Scalper', tf: 'M5', status: 'running', trades: 23, pnl: '+$456', ai: 'GPT-4o' },
-    { name: 'Agent-Beta', role: 'Swing', tf: 'H4', status: 'running', trades: 5, pnl: '+$1,234', ai: 'LSTM' },
-    { name: 'Agent-Gamma', role: 'News', tf: 'M15', status: 'standby', trades: 0, pnl: '$0', ai: 'Gemini' },
-    { name: 'Agent-Delta', role: 'Arbitrage', tf: 'M1', status: 'running', trades: 47, pnl: '+$189', ai: 'XGBoost' },
-    { name: 'Agent-Epsilon', role: 'Hedger', tf: 'H1', status: 'monitoring', trades: 3, pnl: '-$45', ai: 'Claude' },
-  ];
-
+function ComponentsSection() {
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
-      <div className="xl:col-span-2 space-y-2">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-cyan-400 font-bold text-[10px] uppercase tracking-[0.2em]">🤖 Multi AI Agent Fleet</h3>
-          <button className="px-3 py-1 text-[10px] rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20">+ Deploy Agent</button>
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        🔧 Komponen Utama
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[
+          {
+            title: '1. Data Ingestion Module',
+            icon: '📥',
+            items: ['Market Data Feed (tick, OHLCV)', 'Alternative Data (sentiment, news)', 'Fundamental Data (financial statements)', 'On-chain Data (wallet, DEX volumes)'],
+            color: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30'
+          },
+          {
+            title: '2. AI/ML Engine',
+            icon: '🧠',
+            items: ['Prediction Models (harga, arah, volatilitas)', 'Signal Generator (buy/sell/hold)', 'Pattern Recognition (candlestick, chart)', 'Sentiment Analysis (NLP)'],
+            color: 'from-purple-500/20 to-pink-500/20 border-purple-500/30'
+          },
+          {
+            title: '3. Risk Management Module',
+            icon: '🛡️',
+            items: ['Position Sizing (Kelly Criterion)', 'Dynamic Stop Loss/Take Profit', 'Portfolio Risk (VaR, CVaR)', 'Correlation Analysis'],
+            color: 'from-orange-500/20 to-red-500/20 border-orange-500/30'
+          },
+          {
+            title: '4. Execution Engine',
+            icon: '⚡',
+            items: ['Smart Order Routing', 'Slippage Control (TWAP, VWAP)', 'Latency Optimization', 'Order Management System'],
+            color: 'from-green-500/20 to-emerald-500/20 border-green-500/30'
+          },
+          {
+            title: '5. Backtesting Framework',
+            icon: '📋',
+            items: ['Historical Simulation', 'Walk-forward Analysis', 'Monte Carlo Simulation', 'Performance Metrics'],
+            color: 'from-yellow-500/20 to-orange-500/20 border-yellow-500/30'
+          },
+          {
+            title: '6. Monitoring System',
+            icon: '📊',
+            items: ['System Health Monitoring', 'Trading Metrics Dashboard', 'Model Performance Tracking', 'Alert & Notification System'],
+            color: 'from-cyan-500/20 to-blue-500/20 border-cyan-500/30'
+          },
+        ].map((comp, i) => (
+          <div key={i} className={`bg-gradient-to-br ${comp.color} rounded-2xl p-5 border`}>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-2xl">{comp.icon}</span>
+              <h3 className="font-bold text-white text-lg">{comp.title}</h3>
+            </div>
+            <ul className="space-y-2">
+              {comp.items.map((item, j) => (
+                <li key={j} className="flex items-start gap-2 text-sm text-gray-300">
+                  <span className="text-cyan-400 mt-0.5">▸</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AITypesSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        🧠 Jenis-Jenis AI dalam Trading
+      </h2>
+
+      <div className="space-y-6">
+        {/* Machine Learning */}
+        <div className="bg-[#111827] rounded-2xl p-6 border border-blue-500/20">
+          <h3 className="text-xl font-bold text-blue-300 mb-4 flex items-center gap-2">
+            <span>📐</span> 1. Machine Learning (ML)
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-blue-900/20 rounded-xl p-4 border border-blue-500/10">
+              <h4 className="font-bold text-blue-200 text-sm mb-2">Supervised Learning</h4>
+              <ul className="text-xs text-gray-400 space-y-1">
+                <li>• Regression (Price Prediction)</li>
+                <li>• Classification (Direction)</li>
+                <li>• Time Series Forecasting</li>
+              </ul>
+            </div>
+            <div className="bg-purple-900/20 rounded-xl p-4 border border-purple-500/10">
+              <h4 className="font-bold text-purple-200 text-sm mb-2">Unsupervised Learning</h4>
+              <ul className="text-xs text-gray-400 space-y-1">
+                <li>• Clustering (Regime Detection)</li>
+                <li>• Anomaly Detection</li>
+                <li>• Dimensionality Reduction</li>
+              </ul>
+            </div>
+            <div className="bg-green-900/20 rounded-xl p-4 border border-green-500/10">
+              <h4 className="font-bold text-green-200 text-sm mb-2">Reinforcement Learning</h4>
+              <ul className="text-xs text-gray-400 space-y-1">
+                <li>• Q-Learning / DQN</li>
+                <li>• Policy Gradient (PPO, A2C)</li>
+                <li>• Multi-Agent RL</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        {agents.map((a, i) => (
-          <div key={i} className="glass-panel rounded-xl p-4 hover:border-cyan-500/20 transition-all">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                  a.status === 'running' ? 'bg-cyan-500/10 border border-cyan-500/20 animate-glow-pulse' :
-                  a.status === 'standby' ? 'bg-yellow-500/10 border border-yellow-500/20' : 'bg-blue-500/10 border border-blue-500/20'
-                }`}><span>🤖</span></div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-white text-xs font-bold">{a.name}</span>
-                    <span className={`text-[8px] px-1.5 py-0.5 rounded-full ${
-                      a.status === 'running' ? 'bg-green-500/10 text-green-400' :
-                      a.status === 'standby' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-blue-500/10 text-blue-400'
-                    }`}>{a.status}</span>
-                  </div>
-                  <div className="text-[10px] text-gray-600">{a.role} | {a.tf} | {a.ai}</div>
-                </div>
+
+        {/* Deep Learning */}
+        <div className="bg-[#111827] rounded-2xl p-6 border border-purple-500/20">
+          <h3 className="text-xl font-bold text-purple-300 mb-4 flex items-center gap-2">
+            <span>🔮</span> 2. Deep Learning
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            {[
+              { name: 'LSTM/GRU', desc: 'Sequential patterns' },
+              { name: 'Transformer', desc: 'Attention-based' },
+              { name: 'CNN', desc: 'Chart patterns' },
+              { name: 'GAN', desc: 'Data generation' },
+              { name: 'Autoencoder', desc: 'Feature extraction' },
+            ].map((model, i) => (
+              <div key={i} className="bg-purple-900/20 rounded-xl p-3 text-center border border-purple-500/10">
+                <h4 className="font-bold text-purple-200 text-sm">{model.name}</h4>
+                <p className="text-xs text-gray-500 mt-1">{model.desc}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <div className="text-[10px] text-gray-500">Trades: <span className="text-white font-mono">{a.trades}</span></div>
-                  <div className={`text-xs font-mono font-bold ${a.pnl.startsWith('+') ? 'text-green-400' : a.pnl.startsWith('-') ? 'text-red-400' : 'text-gray-500'}`}>{a.pnl}</div>
+            ))}
+          </div>
+        </div>
+
+        {/* NLP */}
+        <div className="bg-[#111827] rounded-2xl p-6 border border-green-500/20">
+          <h3 className="text-xl font-bold text-green-300 mb-4 flex items-center gap-2">
+            <span>💬</span> 3. Natural Language Processing (NLP)
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { name: 'Sentiment Analysis', desc: 'Analisis sentimen berita' },
+              { name: 'NER', desc: 'Identifikasi entitas' },
+              { name: 'Topic Modeling', desc: 'Deteksi tema pasar' },
+              { name: 'LLM Integration', desc: 'GPT, Claude analysis' },
+            ].map((item, i) => (
+              <div key={i} className="bg-green-900/20 rounded-xl p-3 border border-green-500/10">
+                <h4 className="font-bold text-green-200 text-sm">{item.name}</h4>
+                <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* RL */}
+        <div className="bg-[#111827] rounded-2xl p-6 border border-orange-500/20">
+          <h3 className="text-xl font-bold text-orange-300 mb-4 flex items-center gap-2">
+            <span>🎮</span> 4. Reinforcement Learning (RL)
+          </h3>
+          <div className="bg-orange-900/10 rounded-xl p-4 border border-orange-500/10">
+            <ul className="text-sm text-gray-300 space-y-2">
+              <li className="flex items-start gap-2"><span className="text-orange-400">▸</span> Agent belajar dari interaksi dengan environment pasar</li>
+              <li className="flex items-start gap-2"><span className="text-orange-400">▸</span> <strong>Reward function:</strong> Profit, risk-adjusted return</li>
+              <li className="flex items-start gap-2"><span className="text-orange-400">▸</span> <strong>State space:</strong> Market features, portfolio state</li>
+              <li className="flex items-start gap-2"><span className="text-orange-400">▸</span> <strong>Action space:</strong> Buy, sell, hold, position size</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StrategiesSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        📊 Strategi Trading
+      </h2>
+
+      <div className="space-y-6">
+        {[
+          {
+            title: 'Trend Following',
+            icon: '📈',
+            color: 'border-green-500/30',
+            items: [
+              { name: 'Moving Average Crossover', desc: 'SMA/EMA crossover signals' },
+              { name: 'Momentum Strategy', desc: 'Relative strength, rate of change' },
+              { name: 'Breakout Trading', desc: 'Support/resistance level breaks' },
+              { name: 'AI Enhancement', desc: 'Adaptive MA periods, dynamic thresholds' },
+            ]
+          },
+          {
+            title: 'Mean Reversion',
+            icon: '🔄',
+            color: 'border-blue-500/30',
+            items: [
+              { name: 'Statistical Arbitrage', desc: 'Pairs trading, cointegration' },
+              { name: 'Bollinger Band Strategy', desc: 'Oversold/overbought signals' },
+              { name: 'Z-Score Trading', desc: 'Standard deviation based entries' },
+              { name: 'AI Enhancement', desc: 'ML-based regime detection' },
+            ]
+          },
+          {
+            title: 'Market Making',
+            icon: '💹',
+            color: 'border-purple-500/30',
+            items: [
+              { name: 'Bid-Ask Spread Capture', desc: 'Profit from spread' },
+              { name: 'Inventory Management', desc: 'Balanced position keeping' },
+              { name: 'AI Enhancement', desc: 'Optimal quote placement via RL' },
+            ]
+          },
+          {
+            title: 'Sentiment-Based',
+            icon: '💭',
+            color: 'border-orange-500/30',
+            items: [
+              { name: 'News Trading', desc: 'React to breaking news' },
+              { name: 'Social Media Analysis', desc: 'Twitter, Reddit sentiment' },
+              { name: 'Earnings Reaction', desc: 'Post-earnings drift' },
+              { name: 'AI Enhancement', desc: 'Real-time NLP processing' },
+            ]
+          },
+          {
+            title: 'Multi-Factor',
+            icon: '🎯',
+            color: 'border-cyan-500/30',
+            items: [
+              { name: 'Alpha Factor Combination', desc: 'Multiple signal sources' },
+              { name: 'Factor Timing', desc: 'Dynamic weight adjustment' },
+              { name: 'AI Enhancement', desc: 'Non-linear factor interaction modeling' },
+            ]
+          },
+        ].map((strategy, i) => (
+          <div key={i} className={`bg-[#111827] rounded-2xl p-6 border ${strategy.color}`}>
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <span className="text-2xl">{strategy.icon}</span> {strategy.title}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {strategy.items.map((item, j) => (
+                <div key={j} className="bg-white/5 rounded-lg p-3">
+                  <h4 className="font-semibold text-sm text-white">{item.name}</h4>
+                  <p className="text-xs text-gray-400 mt-1">{item.desc}</p>
                 </div>
-                <div className="flex gap-1">
-                  <button className="w-6 h-6 rounded bg-white/3 hover:bg-green-500/10 text-[10px] flex items-center justify-center text-gray-500 hover:text-green-400">▶</button>
-                  <button className="w-6 h-6 rounded bg-white/3 hover:bg-red-500/10 text-[10px] flex items-center justify-center text-gray-500 hover:text-red-400">⏹</button>
-                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MLModelsSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        🤖 Machine Learning Models
+      </h2>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="bg-cyan-900/20">
+              <th className="text-left py-3 px-4 text-cyan-300 font-bold rounded-tl-lg">Model</th>
+              <th className="text-left py-3 px-4 text-cyan-300 font-bold">Use Case</th>
+              <th className="text-left py-3 px-4 text-cyan-300 font-bold">Kelebihan</th>
+              <th className="text-left py-3 px-4 text-cyan-300 font-bold rounded-tr-lg">Kekurangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ['XGBoost/LightGBM', 'Tabular data', 'Fast, interpretable', 'Overfitting risk'],
+              ['LSTM', 'Time series', 'Long dependencies', 'Slow training'],
+              ['Transformer', 'Multi-modal', 'Parallel processing', 'Data hungry'],
+              ['Random Forest', 'Classification', 'Robust', 'Less accurate'],
+              ['SVM', 'Classification', 'High dimensions', 'Scaling issues'],
+              ['PPO/SAC (RL)', 'Dynamic strategy', 'Adaptive', 'Complex training'],
+              ['Bayesian', 'Uncertainty', 'Probabilistic', 'Complex setup'],
+            ].map((row, i) => (
+              <tr key={i} className="border-b border-gray-800/50 hover:bg-white/5">
+                <td className="py-3 px-4 font-medium text-white">{row[0]}</td>
+                <td className="py-3 px-4 text-gray-400">{row[1]}</td>
+                <td className="py-3 px-4 text-green-300">{row[2]}</td>
+                <td className="py-3 px-4 text-red-300">{row[3]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="bg-[#111827] rounded-2xl p-6 border border-purple-500/20">
+        <h3 className="text-lg font-bold text-purple-300 mb-4">🔀 Model Ensemble</h3>
+        <p className="text-gray-300 text-sm mb-4">
+          Pendekatan ensemble menggabungkan beberapa model untuk meningkatkan akurasi prediksi dan mengurangi risiko overfitting.
+        </p>
+        <div className="bg-[#0a0e1a] rounded-xl p-4 font-mono text-xs text-green-300 overflow-x-auto">
+          <pre>{`class TradingEnsemble:
+    def __init__(self):
+        self.models = [
+            XGBoostModel(),      # weight: 0.30
+            LSTMModel(),         # weight: 0.25
+            TransformerModel(),  # weight: 0.25
+            RLAgent()            # weight: 0.20
+        ]
+        self.weights = [0.3, 0.25, 0.25, 0.2]
+    
+    def predict(self, features):
+        predictions = [m.predict(features) for m in self.models]
+        return weighted_average(predictions, self.weights)`}</pre>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DataSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        📈 Data & Feature Engineering
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-[#111827] rounded-2xl p-5 border border-blue-500/20">
+          <h3 className="text-lg font-bold text-blue-300 mb-3">📐 Fitur Teknikal</h3>
+          <ul className="space-y-2 text-sm text-gray-300">
+            <li className="flex items-start gap-2"><span className="text-blue-400">▸</span> Price Features: Returns, log returns, volatility</li>
+            <li className="flex items-start gap-2"><span className="text-blue-400">▸</span> Volume Features: OBV, VWAP, volume profile</li>
+            <li className="flex items-start gap-2"><span className="text-blue-400">▸</span> Momentum: RSI, MACD, Stochastic, ADX</li>
+            <li className="flex items-start gap-2"><span className="text-blue-400">▸</span> Volatility: ATR, Bollinger Width, Hist. Vol</li>
+            <li className="flex items-start gap-2"><span className="text-blue-400">▸</span> Trend: ADX, Aroon, Ichimoku</li>
+          </ul>
+        </div>
+
+        <div className="bg-[#111827] rounded-2xl p-5 border border-green-500/20">
+          <h3 className="text-lg font-bold text-green-300 mb-3">💰 Fitur Fundamental</h3>
+          <ul className="space-y-2 text-sm text-gray-300">
+            <li className="flex items-start gap-2"><span className="text-green-400">▸</span> Valuation: P/E, P/B, EV/EBITDA</li>
+            <li className="flex items-start gap-2"><span className="text-green-400">▸</span> Growth: Revenue growth, earnings growth</li>
+            <li className="flex items-start gap-2"><span className="text-green-400">▸</span> Quality: ROE, debt/equity, FCF</li>
+            <li className="flex items-start gap-2"><span className="text-green-400">▸</span> Macro: Interest rates, inflation, GDP</li>
+          </ul>
+        </div>
+
+        <div className="bg-[#111827] rounded-2xl p-5 border border-purple-500/20">
+          <h3 className="text-lg font-bold text-purple-300 mb-3">🔮 Fitur Alternative</h3>
+          <ul className="space-y-2 text-sm text-gray-300">
+            <li className="flex items-start gap-2"><span className="text-purple-400">▸</span> Sentiment Scores: News, social media</li>
+            <li className="flex items-start gap-2"><span className="text-purple-400">▸</span> Flow Data: Options flow, institutional</li>
+            <li className="flex items-start gap-2"><span className="text-purple-400">▸</span> On-chain: Active addresses, exchange flows</li>
+            <li className="flex items-start gap-2"><span className="text-purple-400">▸</span> Satellite Data: Traffic, shipping</li>
+          </ul>
+        </div>
+
+        <div className="bg-[#111827] rounded-2xl p-5 border border-orange-500/20">
+          <h3 className="text-lg font-bold text-orange-300 mb-3">⚙️ Feature Engineering Pipeline</h3>
+          <div className="space-y-2 text-sm">
+            {['Raw Data', 'Cleaning', 'Normalization', 'Feature Creation', 'Selection', 'Transformation', 'Model Input'].map((step, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-orange-500/20 text-orange-300 text-xs flex items-center justify-center font-bold">{i + 1}</span>
+                <span className="text-gray-300">{step}</span>
+                {i < 6 && <span className="text-orange-400">→</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-[#111827] rounded-2xl p-5 border border-cyan-500/20">
+        <h3 className="text-lg font-bold text-cyan-300 mb-3">🔑 Teknik Penting</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            { name: 'Stationarity', desc: 'Differencing, log transform' },
+            { name: 'Normalization', desc: 'Min-max, z-score, robust scaler' },
+            { name: 'Lag Features', desc: 'Historical values as predictors' },
+            { name: 'Rolling Statistics', desc: 'Moving windows of various sizes' },
+            { name: 'Cross-sectional', desc: 'Relative ranking among assets' },
+          ].map((tech, i) => (
+            <div key={i} className="bg-cyan-900/10 rounded-lg p-3">
+              <h4 className="font-semibold text-sm text-cyan-200">{tech.name}</h4>
+              <p className="text-xs text-gray-400 mt-1">{tech.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RiskSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        🛡️ Risk Management
+      </h2>
+
+      <div>
+        <h3 className="text-xl font-bold text-white mb-4">Position Sizing Methods</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { name: 'Fixed Fractional', formula: 'Size = (Account × Risk%) / Stop Loss', desc: 'Metode sederhana dan mudah diimplementasi' },
+            { name: 'Kelly Criterion', formula: 'f* = (p×b - q) / b', desc: 'Optimal growth rate, p=win prob, b=win/loss ratio' },
+            { name: 'Volatility-Based (ATR)', formula: 'Size = (Account × Risk%) / (ATR × Mult)', desc: 'Menyesuaikan dengan volatilitas pasar' },
+            { name: 'Risk Parity', formula: 'W_i = (1/σ_i) / Σ(1/σ_j)', desc: 'Equal risk contribution per asset' },
+          ].map((method, i) => (
+            <div key={i} className="bg-[#111827] rounded-xl p-4 border border-orange-500/20">
+              <h4 className="font-bold text-orange-300 text-sm mb-2">{method.name}</h4>
+              <code className="text-xs text-green-300 bg-green-900/20 px-2 py-1 rounded block mb-2">{method.formula}</code>
+              <p className="text-xs text-gray-400">{method.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-xl font-bold text-white mb-4">Risk Metrics</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-orange-900/20">
+                <th className="text-left py-2 px-4 text-orange-300 rounded-tl-lg">Metric</th>
+                <th className="text-left py-2 px-4 text-orange-300">Deskripsi</th>
+                <th className="text-left py-2 px-4 text-orange-300 rounded-tr-lg">Target</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['VaR', 'Maximum expected loss at confidence level', '95-99%'],
+                ['CVaR', 'Expected loss beyond VaR', '< VaR × 1.5'],
+                ['Max Drawdown', 'Largest peak-to-trough decline', '< 15%'],
+                ['Sharpe Ratio', 'Risk-adjusted return', '> 1.5'],
+                ['Sortino Ratio', 'Downside risk-adjusted return', '> 2.0'],
+                ['Calmar Ratio', 'Return / Max Drawdown', '> 1.0'],
+              ].map((row, i) => (
+                <tr key={i} className="border-b border-gray-800/50 hover:bg-white/5">
+                  <td className="py-2 px-4 font-medium text-white">{row[0]}</td>
+                  <td className="py-2 px-4 text-gray-400">{row[1]}</td>
+                  <td className="py-2 px-4 text-green-300">{row[2]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="bg-red-900/10 rounded-2xl p-5 border border-red-500/20">
+        <h3 className="text-lg font-bold text-red-300 mb-3">⚠️ Risk Rules</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Maximum position size per trade: 2-5% of capital',
+            'Maximum portfolio exposure: defined limit',
+            'Maximum correlated positions: 3-5',
+            'Daily loss limit: 2-3% of capital',
+            'Drawdown circuit breaker: Stop at 10-15% DD',
+          ].map((rule, i) => (
+            <div key={i} className="flex items-start gap-2 text-sm text-gray-300">
+              <span className="text-red-400 mt-0.5">⛔</span>
+              {rule}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BacktestingSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        📋 Backtesting & Evaluasi
+      </h2>
+
+      <div className="bg-[#111827] rounded-2xl p-6 border border-gray-800">
+        <h3 className="text-lg font-bold text-white mb-4">Backtesting Framework</h3>
+        <div className="bg-[#0a0e1a] rounded-xl p-4 font-mono text-xs text-green-300 overflow-x-auto">
+          <pre>{`class Backtester:
+    def __init__(self, strategy, data, config):
+        self.strategy = strategy
+        self.data = data
+    
+    def run(self):
+        for bar in self.data:
+            signal = self.strategy.generate_signal(bar)
+            position = self.risk_manager.size_position(signal)
+            execution = self.executor.execute(position)
+            self.portfolio.update(execution)
+        return self.calculate_metrics()
+    
+    def calculate_metrics(self):
+        return {
+            'total_return': self.portfolio.total_return(),
+            'sharpe_ratio': self.portfolio.sharpe_ratio(),
+            'max_drawdown': self.portfolio.max_drawdown(),
+            'win_rate': self.portfolio.win_rate(),
+            'profit_factor': self.portfolio.profit_factor()
+        }`}</pre>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-xl font-bold text-white mb-4">Metrik Evaluasi</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { name: 'Total Return', target: '> 20% annually', icon: '📈' },
+            { name: 'Sharpe Ratio', target: '> 1.5', icon: '📊' },
+            { name: 'Sortino Ratio', target: '> 2.0', icon: '📉' },
+            { name: 'Max Drawdown', target: '< 15%', icon: '📉' },
+            { name: 'Win Rate', target: '> 50%', icon: '🎯' },
+            { name: 'Profit Factor', target: '> 1.5', icon: '💰' },
+            { name: 'Calmar Ratio', target: '> 1.0', icon: '📐' },
+            { name: 'Expectancy', target: '> 0', icon: '🧮' },
+          ].map((metric, i) => (
+            <div key={i} className="bg-[#111827] rounded-xl p-3 border border-gray-800 text-center">
+              <span className="text-xl">{metric.icon}</span>
+              <h4 className="font-bold text-white text-sm mt-1">{metric.name}</h4>
+              <p className="text-xs text-green-300 mt-1">{metric.target}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-red-900/10 rounded-2xl p-5 border border-red-500/20">
+        <h3 className="text-lg font-bold text-red-300 mb-3">🚫 Bias yang Harus Dihindari</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            { name: 'Look-ahead Bias', desc: 'Menggunakan data masa depan' },
+            { name: 'Survivorship Bias', desc: 'Hanya data yang masih ada' },
+            { name: 'Overfitting', desc: 'Terlalu kompleks untuk data historis' },
+            { name: 'Selection Bias', desc: 'Memilih parameter terbaik saja' },
+            { name: 'Transaction Cost Ignorance', desc: 'Mengabaikan biaya trading' },
+          ].map((bias, i) => (
+            <div key={i} className="flex items-start gap-2 text-sm">
+              <span className="text-red-400">⚠️</span>
+              <div>
+                <span className="font-semibold text-red-200">{bias.name}:</span>
+                <span className="text-gray-400 ml-1">{bias.desc}</span>
               </div>
             </div>
-            {a.status === 'running' && isActive && (
-              <div className="mt-2 flex items-center gap-px">
-                {[...Array(30)].map((_, j) => (
-                  <div key={j} className="w-px bg-gradient-to-t from-cyan-500/60 to-blue-400/30 rounded-full animate-pulse"
-                    style={{ height: `${Math.random() * 12 + 2}px`, animationDelay: `${j * 0.04}s` }} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DeploymentSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        🚀 Implementasi & Deployment
+      </h2>
+
+      <div>
+        <h3 className="text-xl font-bold text-white mb-4">Tech Stack</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            {
+              title: 'Languages',
+              icon: '💻',
+              items: ['Python (ML, backtesting)', 'C++ (low-latency)', 'Rust (safety + perf)', 'TypeScript (dashboard)'],
+              color: 'border-blue-500/30'
+            },
+            {
+              title: 'ML Frameworks',
+              icon: '🧠',
+              items: ['PyTorch (deep learning)', 'scikit-learn (classical ML)', 'XGBoost/LightGBM', 'Stable-Baselines3 (RL)'],
+              color: 'border-purple-500/30'
+            },
+            {
+              title: 'Data & Storage',
+              icon: '💾',
+              items: ['PostgreSQL/TimescaleDB', 'Redis (caching)', 'InfluxDB (metrics)', 'Apache Kafka (streaming)'],
+              color: 'border-green-500/30'
+            },
+            {
+              title: 'Infrastructure',
+              icon: '☁️',
+              items: ['Docker/Kubernetes', 'AWS/GCP', 'Grafana (monitoring)', 'Prometheus (metrics)'],
+              color: 'border-orange-500/30'
+            },
+          ].map((stack, i) => (
+            <div key={i} className={`bg-[#111827] rounded-xl p-4 border ${stack.color}`}>
+              <h4 className="font-bold text-white flex items-center gap-2 mb-3">
+                <span>{stack.icon}</span> {stack.title}
+              </h4>
+              <ul className="space-y-1">
+                {stack.items.map((item, j) => (
+                  <li key={j} className="text-sm text-gray-400 flex items-center gap-2">
+                    <span className="text-cyan-400 text-xs">●</span> {item}
+                  </li>
                 ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-xl font-bold text-white mb-4">Deployment Pipeline</h3>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {[
+            { stage: 'Development', icon: '💻' },
+            { stage: 'Testing', icon: '🧪' },
+            { stage: 'Staging', icon: '🔄' },
+            { stage: 'Paper Trading', icon: '📝' },
+            { stage: 'Live Trading', icon: '🚀' },
+          ].map((step, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl p-3 border border-cyan-500/30 text-center min-w-[100px]">
+                <span className="text-xl block">{step.icon}</span>
+                <span className="text-xs font-bold text-cyan-200">{step.stage}</span>
               </div>
-            )}
+              {i < 4 && <span className="text-cyan-400 text-lg">→</span>}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-[#111827] rounded-2xl p-5 border border-cyan-500/20">
+        <h3 className="text-lg font-bold text-cyan-300 mb-3">📡 Monitoring & Alerting</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            { name: 'System Health', desc: 'CPU, memory, network latency' },
+            { name: 'Trading Metrics', desc: 'PnL, drawdown, win rate (real-time)' },
+            { name: 'Model Performance', desc: 'Prediction accuracy drift' },
+            { name: 'Execution Quality', desc: 'Slippage, fill rate, latency' },
+          ].map((item, i) => (
+            <div key={i} className="bg-cyan-900/10 rounded-lg p-3">
+              <h4 className="font-semibold text-sm text-cyan-200">{item.name}</h4>
+              <p className="text-xs text-gray-400 mt-1">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MultiAgentSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        🤝 Multi-Agent System
+      </h2>
+
+      <div className="bg-[#111827] rounded-2xl p-6 border border-purple-500/20">
+        <h3 className="text-lg font-bold text-white mb-4">Arsitektur Multi-Agent</h3>
+        <div className="flex flex-col items-center gap-4">
+          {/* Orchestrator */}
+          <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl p-4 border border-purple-500/30 text-center w-full max-w-md">
+            <span className="text-2xl">🎛️</span>
+            <h4 className="font-bold text-purple-200 mt-1">ORCHESTRATOR AGENT</h4>
+            <p className="text-xs text-gray-400">Strategy Selection & Allocation</p>
+          </div>
+          
+          <span className="text-cyan-400 text-2xl">↓</span>
+          
+          {/* Sub Agents */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-2xl">
+            {[
+              { name: 'Trend Agent', icon: '📈' },
+              { name: 'Mean Revert', icon: '🔄' },
+              { name: 'Scalp Agent', icon: '⚡' },
+              { name: 'News Agent', icon: '📰' },
+            ].map((agent, i) => (
+              <div key={i} className="bg-blue-900/20 rounded-xl p-3 border border-blue-500/20 text-center">
+                <span className="text-xl">{agent.icon}</span>
+                <h4 className="font-bold text-blue-200 text-xs mt-1">{agent.name}</h4>
+              </div>
+            ))}
+          </div>
+          
+          <span className="text-cyan-400 text-2xl">↓</span>
+          
+          {/* Risk & Execution */}
+          <div className="grid grid-cols-2 gap-3 w-full max-w-md">
+            <div className="bg-orange-900/20 rounded-xl p-3 border border-orange-500/20 text-center">
+              <span className="text-xl">🛡️</span>
+              <h4 className="font-bold text-orange-200 text-xs mt-1">RISK MANAGER</h4>
+            </div>
+            <div className="bg-green-900/20 rounded-xl p-3 border border-green-500/20 text-center">
+              <span className="text-xl">⚡</span>
+              <h4 className="font-bold text-green-200 text-xs mt-1">EXECUTION</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-xl font-bold text-white mb-4">Jenis Agent</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            { name: 'Analyst Agent', desc: 'Analisis market dan generate signals', icon: '🔍' },
+            { name: 'Strategy Agent', desc: 'Mengelola strategi spesifik', icon: '🎯' },
+            { name: 'Risk Agent', desc: 'Monitor dan manage portfolio risk', icon: '🛡️' },
+            { name: 'Execution Agent', desc: 'Optimal order execution', icon: '⚡' },
+            { name: 'Sentiment Agent', desc: 'Analisis berita dan social media', icon: '💬' },
+            { name: 'Meta-Learning Agent', desc: 'Optimize agent parameters', icon: '🧬' },
+          ].map((agent, i) => (
+            <div key={i} className="bg-[#111827] rounded-xl p-4 border border-gray-800 flex items-center gap-3">
+              <span className="text-2xl">{agent.icon}</span>
+              <div>
+                <h4 className="font-bold text-white text-sm">{agent.name}</h4>
+                <p className="text-xs text-gray-400">{agent.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-[#111827] rounded-2xl p-5 border border-cyan-500/20">
+        <h3 className="text-lg font-bold text-cyan-300 mb-3">🔗 Komunikasi Agent</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            { name: 'Message Passing', desc: 'Agent-to-agent communication' },
+            { name: 'Shared Memory', desc: 'Common state representation' },
+            { name: 'Blackboard Architecture', desc: 'Shared knowledge base' },
+            { name: 'Negotiation', desc: 'Consensus-based decisions' },
+          ].map((item, i) => (
+            <div key={i} className="bg-cyan-900/10 rounded-lg p-3">
+              <h4 className="font-semibold text-sm text-cyan-200">{item.name}</h4>
+              <p className="text-xs text-gray-400 mt-1">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IntegrationSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        🔌 Integrasi Platform
+      </h2>
+
+      <div className="space-y-6">
+        {/* MT5 */}
+        <div className="bg-[#111827] rounded-2xl p-6 border border-blue-500/20">
+          <h3 className="text-lg font-bold text-blue-300 mb-3 flex items-center gap-2">
+            <span>📊</span> MetaTrader 5 (MT5)
+          </h3>
+          <div className="bg-[#0a0e1a] rounded-xl p-4 font-mono text-xs text-green-300 overflow-x-auto">
+            <pre>{`import MetaTrader5 as mt5
+
+# Initialize connection
+mt5.initialize(login=12345, server="BrokerServer", password="***")
+
+# Get data
+rates = mt5.copy_rates_from_pos("EURUSD", mt5.TIMEFRAME_M1, 0, 1000)
+
+# Send order
+request = {
+    "action": mt5.TRADE_ACTION_DEAL,
+    "symbol": "EURUSD",
+    "volume": 0.1,
+    "type": mt5.ORDER_TYPE_BUY,
+    "price": mt5.symbol_info_tick("EURUSD").ask,
+}
+result = mt5.order_send(request)`}</pre>
+          </div>
+        </div>
+
+        {/* Crypto */}
+        <div className="bg-[#111827] rounded-2xl p-6 border border-orange-500/20">
+          <h3 className="text-lg font-bold text-orange-300 mb-3 flex items-center gap-2">
+            <span>₿</span> Crypto Exchange (Binance)
+          </h3>
+          <div className="bg-[#0a0e1a] rounded-xl p-4 font-mono text-xs text-green-300 overflow-x-auto">
+            <pre>{`import ccxt
+
+exchange = ccxt.binance({
+    'apiKey': 'YOUR_API_KEY',
+    'secret': 'YOUR_SECRET',
+})
+
+# Get ticker
+ticker = exchange.fetch_ticker('BTC/USDT')
+
+# Place order
+order = exchange.create_limit_buy_order('BTC/USDT', 0.001, 50000)`}</pre>
+          </div>
+        </div>
+
+        {/* IB */}
+        <div className="bg-[#111827] rounded-2xl p-6 border border-green-500/20">
+          <h3 className="text-lg font-bold text-green-300 mb-3 flex items-center gap-2">
+            <span>🏦</span> Interactive Brokers
+          </h3>
+          <div className="bg-[#0a0e1a] rounded-xl p-4 font-mono text-xs text-green-300 overflow-x-auto">
+            <pre>{`from ib_insync import IB
+
+ib = IB()
+ib.connect('127.0.0.1', 7497, clientId=1)
+
+# Get market data
+contract = Stock('AAPL', 'SMART', 'USD')
+bars = ib.reqHistoricalData(contract, '', '1 D', '1 min', 'TRADES', False)
+
+# Place order
+order = MarketOrder('BUY', 100)
+trade = ib.placeOrder(contract, order)`}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SecuritySection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        🔒 Keamanan & Compliance
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-[#111827] rounded-2xl p-5 border border-red-500/20">
+          <h3 className="text-lg font-bold text-red-300 mb-4 flex items-center gap-2">
+            <span>🔐</span> Keamanan Sistem
+          </h3>
+          <ul className="space-y-3 text-sm text-gray-300">
+            <li className="flex items-start gap-2"><span className="text-red-400">▸</span> <strong>API Key Management:</strong> Encrypted storage, rotation policy</li>
+            <li className="flex items-start gap-2"><span className="text-red-400">▸</span> <strong>Authentication:</strong> Multi-factor authentication</li>
+            <li className="flex items-start gap-2"><span className="text-red-400">▸</span> <strong>Network Security:</strong> VPN, firewall, encrypted connections</li>
+            <li className="flex items-start gap-2"><span className="text-red-400">▸</span> <strong>Code Security:</strong> Input validation, no hardcoded secrets</li>
+            <li className="flex items-start gap-2"><span className="text-red-400">▸</span> <strong>Audit Trail:</strong> Complete logging of all actions</li>
+          </ul>
+        </div>
+
+        <div className="bg-[#111827] rounded-2xl p-5 border border-yellow-500/20">
+          <h3 className="text-lg font-bold text-yellow-300 mb-4 flex items-center gap-2">
+            <span>⚖️</span> Compliance
+          </h3>
+          <ul className="space-y-3 text-sm text-gray-300">
+            <li className="flex items-start gap-2"><span className="text-yellow-400">▸</span> <strong>Regulatory:</strong> SEC, FCA, ASIC regulations</li>
+            <li className="flex items-start gap-2"><span className="text-yellow-400">▸</span> <strong>KYC/AML:</strong> Know Your Customer, Anti-Money Laundering</li>
+            <li className="flex items-start gap-2"><span className="text-yellow-400">▸</span> <strong>Market Rules:</strong> Pattern day trading, short selling</li>
+            <li className="flex items-start gap-2"><span className="text-yellow-400">▸</span> <strong>Tax Reporting:</strong> Accurate trade reporting</li>
+            <li className="flex items-start gap-2"><span className="text-yellow-400">▸</span> <strong>Data Privacy:</strong> GDPR compliance</li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="bg-green-900/10 rounded-2xl p-5 border border-green-500/20">
+        <h3 className="text-lg font-bold text-green-300 mb-3">✅ Best Practices</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'Never share API keys',
+            'Use read-only keys for monitoring',
+            'Implement IP whitelisting',
+            'Regular security audits',
+            'Disaster recovery plan',
+            'Kill switch for emergency stop',
+          ].map((practice, i) => (
+            <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
+              <span className="text-green-400">✓</span>
+              {practice}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ChallengesSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        ⚠️ Tantangan & Limitasi
+      </h2>
+
+      <div className="space-y-6">
+        <div className="bg-[#111827] rounded-2xl p-5 border border-red-500/20">
+          <h3 className="text-lg font-bold text-red-300 mb-3">💻 Tantangan Teknis</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              { name: 'Overfitting', desc: 'Model terlalu spesifik ke data historis' },
+              { name: 'Non-stationarity', desc: 'Pasar berubah seiring waktu' },
+              { name: 'Latency', desc: 'Delay dalam eksekusi order' },
+              { name: 'Data Quality', desc: 'Missing data, outliers, errors' },
+              { name: 'Infrastructure', desc: 'Server downtime, network issues' },
+            ].map((item, i) => (
+              <div key={i} className="bg-red-900/10 rounded-lg p-3">
+                <h4 className="font-semibold text-sm text-red-200">{item.name}</h4>
+                <p className="text-xs text-gray-400 mt-1">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-[#111827] rounded-2xl p-5 border border-orange-500/20">
+          <h3 className="text-lg font-bold text-orange-300 mb-3">📈 Tantangan Pasar</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              { name: 'Market Efficiency', desc: 'Sulit menemukan edge yang konsisten' },
+              { name: 'Competition', desc: 'Berkompetisi dengan institusi besar' },
+              { name: 'Regime Changes', desc: 'Perubahan kondisi pasar tiba-tiba' },
+              { name: 'Black Swan Events', desc: 'Peristiwa tak terduga' },
+              { name: 'Liquidity Risk', desc: 'Tidak bisa exit di market stress' },
+            ].map((item, i) => (
+              <div key={i} className="bg-orange-900/10 rounded-lg p-3">
+                <h4 className="font-semibold text-sm text-orange-200">{item.name}</h4>
+                <p className="text-xs text-gray-400 mt-1">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-[#111827] rounded-2xl p-5 border border-purple-500/20">
+          <h3 className="text-lg font-bold text-purple-300 mb-3">🧠 Tantangan AI</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              { name: 'Explainability', desc: 'Sulit menjelaskan keputusan AI' },
+              { name: 'Data Requirements', desc: 'Butuh data besar untuk training' },
+              { name: 'Computational Cost', desc: 'GPU/TPU untuk deep learning' },
+              { name: 'Concept Drift', desc: 'Model degradation over time' },
+              { name: 'Reward Design', desc: 'Merancang reward function yang tepat' },
+            ].map((item, i) => (
+              <div key={i} className="bg-purple-900/10 rounded-lg p-3">
+                <h4 className="font-semibold text-sm text-purple-200">{item.name}</h4>
+                <p className="text-xs text-gray-400 mt-1">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-green-900/10 rounded-2xl p-5 border border-green-500/20">
+          <h3 className="text-lg font-bold text-green-300 mb-3">🛡️ Mitigasi</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              'Diversifikasi strategi',
+              'Regular model retraining',
+              'Robust risk management',
+              'Paper trading sebelum live',
+              'Continuous monitoring',
+              'Graceful degradation',
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
+                <span className="text-green-400">✓</span>
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TrendsSection() {
+  return (
+    <div className="space-y-8 animate-fadeIn">
+      <h2 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        🔮 Future Trends
+      </h2>
+
+      <div className="space-y-4">
+        {[
+          {
+            title: 'Large Language Models (LLM) in Trading',
+            icon: '💬',
+            color: 'border-blue-500/30',
+            items: ['GPT-4, Claude untuk analisis kontekstual', 'Multi-modal understanding (chart + news + data)', 'Natural language strategy specification', 'Conversational trading interfaces'],
+          },
+          {
+            title: 'Quantum Computing',
+            icon: '⚛️',
+            color: 'border-purple-500/30',
+            items: ['Quantum optimization for portfolio', 'Quantum machine learning', 'Faster Monte Carlo simulations', 'Quantum-inspired algorithms'],
+          },
+          {
+            title: 'Decentralized AI',
+            icon: '🌐',
+            color: 'border-green-500/30',
+            items: ['Federated learning across agents', 'Blockchain-based strategy marketplace', 'Decentralized data oracles', 'Token-incentivized signal sharing'],
+          },
+          {
+            title: 'Advanced RL',
+            icon: '🎮',
+            color: 'border-orange-500/30',
+            items: ['Multi-agent reinforcement learning (MARL)', 'Meta-learning for rapid adaptation', 'Hierarchical RL for complex strategies', 'Sim-to-real transfer learning'],
+          },
+          {
+            title: 'Autonomous Finance',
+            icon: '🤖',
+            color: 'border-cyan-500/30',
+            items: ['Full-stack autonomous trading systems', 'Self-improving agents', 'Cross-asset optimization', 'Real-time strategy evolution'],
+          },
+          {
+            title: 'Edge Computing',
+            icon: '📱',
+            color: 'border-pink-500/30',
+            items: ['Ultra-low latency execution', 'On-device AI inference', '5G-enabled mobile trading', 'IoT sensor data integration'],
+          },
+        ].map((trend, i) => (
+          <div key={i} className={`bg-[#111827] rounded-2xl p-5 border ${trend.color}`}>
+            <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+              <span className="text-2xl">{trend.icon}</span> {i + 1}. {trend.title}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {trend.items.map((item, j) => (
+                <div key={j} className="flex items-start gap-2 text-sm text-gray-300">
+                  <span className="text-cyan-400 mt-0.5">▸</span>
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="space-y-3">
-        <div className="glass-panel rounded-2xl p-5">
-          <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">🎯 Orchestration</h3>
-          <div className="space-y-3">
-            <ParamSelect label="Mode" options={['Independent', 'Cooperative', 'Hierarchical', 'Competitive']} />
-            <ParamInput label="Max Agents" defaultValue="5" />
-            <ParamInput label="Global Risk (%)" defaultValue="10" />
-            <ParamToggle label="Agent Communication" defaultOn />
-            <ParamToggle label="Shared Memory" defaultOn />
+      <div className="bg-gradient-to-r from-cyan-900/20 to-purple-900/20 rounded-2xl p-6 border border-cyan-500/20">
+        <h3 className="text-lg font-bold text-cyan-300 mb-3">📚 Referensi & Resources</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <h4 className="font-bold text-white mb-2">📖 Books</h4>
+            <ul className="space-y-1 text-gray-400">
+              <li>• "Advances in Financial Machine Learning"</li>
+              <li>• "Machine Learning for Trading"</li>
+              <li>• "Algorithmic Trading" - Ernest P. Chan</li>
+              <li>• "Deep Learning for Finance"</li>
+            </ul>
           </div>
-        </div>
-        <div className="glass-panel rounded-2xl p-5">
-          <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">📊 Fleet Performance</h3>
-          <div className="space-y-2">
-            {[
-              { l: 'Total P&L', v: '+$1,834', c: 'text-green-400' },
-              { l: 'Total Trades', v: '78', c: 'text-white' },
-              { l: 'Win Rate', v: '71.8%', c: 'text-cyan-400' },
-              { l: 'Active Agents', v: '3/5', c: 'text-green-400' },
-              { l: 'Avg Confidence', v: '84.2%', c: 'text-blue-400' },
-            ].map(s => (
-              <div key={s.l} className="flex justify-between text-[10px]">
-                <span className="text-gray-500">{s.l}</span>
-                <span className={`font-mono font-medium ${s.c}`}>{s.v}</span>
-              </div>
-            ))}
-            <div className="mt-2 p-2 rounded-lg bg-green-500/5 border border-green-500/10">
-              <div className="text-[9px] text-green-400">● Fleet: OPTIMAL</div>
-            </div>
-          </div>
-        </div>
-        <div className="glass-panel rounded-2xl p-5">
-          <h3 className="text-cyan-400 font-bold mb-3 text-[10px] uppercase tracking-[0.2em]">🔗 Communication</h3>
-          <div className="space-y-3">
-            <ParamSelect label="Protocol" options={['gRPC', 'WebSocket', 'Redis Pub/Sub', 'MQ']} />
-            <ParamInput label="Message TTL (ms)" defaultValue="5000" />
-            <ParamToggle label="Encrypt" defaultOn />
-            <ParamToggle label="Broadcast" defaultOn />
+          <div>
+            <h4 className="font-bold text-white mb-2">🛠️ Tools</h4>
+            <ul className="space-y-1 text-gray-400">
+              <li>• Backtesting: Backtrader, VectorBT</li>
+              <li>• ML: PyTorch, scikit-learn</li>
+              <li>• RL: Stable-Baselines3, FinRL</li>
+              <li>• Data: yfinance, ccxt, Alpha Vantage</li>
+            </ul>
           </div>
         </div>
       </div>

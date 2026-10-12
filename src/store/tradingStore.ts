@@ -193,8 +193,28 @@ interface TradingState {
   equity: number;
   
   // UI State
-  activePanel: 'chart' | 'dashboard' | 'logs' | 'simulation';
-  settingsTab: 'market' | 'technical' | 'risk' | 'ai' | 'mt5' | 'api' | 'gateway' | 'auto' | 'other';
+  activePanel: 'chart' | 'dashboard' | 'logs' | 'simulation' | 'chat' | 'voice';
+  settingsTab: 'market' | 'technical' | 'risk' | 'ai' | 'mt5' | 'api' | 'gateway' | 'auto' | 'chat' | 'other';
+  
+  // Chat Settings
+  chatSettings: {
+    enabled: boolean;
+    model: 'gpt4' | 'claude' | 'gemini' | 'local';
+    personality: 'professional' | 'friendly' | 'concise';
+    autoSuggest: boolean;
+    maxHistory: number;
+  };
+  
+  // Voice Settings
+  voiceSettings: {
+    enabled: boolean;
+    language: string;
+    wakeWord: string;
+    sensitivity: number;
+    autoExecute: boolean;
+    voiceFeedback: boolean;
+    voiceSpeed: number;
+  };
 
   // Actions
   setStatus: (status: AgentStatus) => void;
@@ -225,6 +245,8 @@ interface TradingState {
   setSettingsTab: (tab: TradingState['settingsTab']) => void;
   connectMT5: () => void;
   disconnectMT5: () => void;
+  updateChatSettings: (settings: Partial<TradingState['chatSettings']>) => void;
+  updateVoiceSettings: (settings: Partial<TradingState['voiceSettings']>) => void;
 }
 
 // Default values
@@ -307,6 +329,24 @@ const defaultAISettings: AISettings = {
   ensembleMethods: ['weighted_average', 'stacking', 'voting'],
 };
 
+const defaultChatSettings = {
+  enabled: true,
+  model: 'gpt4' as const,
+  personality: 'professional' as const,
+  autoSuggest: true,
+  maxHistory: 50,
+};
+
+const defaultVoiceSettings = {
+  enabled: true,
+  language: 'en-US',
+  wakeWord: 'hey bot',
+  sensitivity: 0.7,
+  autoExecute: false,
+  voiceFeedback: true,
+  voiceSpeed: 1.0,
+};
+
 // Generate realistic candle data
 function generateCandles(count: number, basePrice: number): CandleData[] {
   const candles: CandleData[] = [];
@@ -367,9 +407,10 @@ export const useTradingStore = create<TradingState>((set, get) => ({
   equity: 10000,
   activePanel: 'chart',
   settingsTab: 'market',
-
-  setStatus: (status) => set({ status }),
-  setSimulationProgress: (progress) => set({ simulationProgress: progress }),
+  chatSettings: defaultChatSettings,
+  voiceSettings: defaultVoiceSettings,
+  
+  setStatus: (status) => set({ status }),  setSimulationProgress: (progress) => set({ simulationProgress: progress }),
   updateMarketConfig: (config) => set((state) => ({
     marketConfig: { ...state.marketConfig, ...config }
   })),
@@ -479,4 +520,12 @@ export const useTradingStore = create<TradingState>((set, get) => ({
     set((state) => ({ mt5Settings: { ...state.mt5Settings, connectionStatus: 'disconnected' } }));
     get().addLog({ type: 'warning', message: '🔌 MT5 Disconnected' });
   },
+  
+  updateChatSettings: (settings) => set((state) => ({
+    chatSettings: { ...state.chatSettings, ...settings }
+  })),
+  
+  updateVoiceSettings: (settings) => set((state) => ({
+    voiceSettings: { ...state.voiceSettings, ...settings }
+  })),
 }));

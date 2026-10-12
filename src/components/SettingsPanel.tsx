@@ -21,6 +21,7 @@ export default function SettingsPanel() {
     { id: 'api' as const, label: 'API', icon: '🔑' },
     { id: 'gateway' as const, label: 'GW', icon: '🌐' },
     { id: 'auto' as const, label: 'Auto', icon: '🤖' },
+    { id: 'chat' as const, label: 'Chat', icon: '💬' },
     { id: 'other' as const, label: 'Other', icon: '⚙️' },
   ];
 
@@ -62,6 +63,7 @@ export default function SettingsPanel() {
           {settingsTab === 'api' && <ConnectionPanel initialTab="api" />}
           {settingsTab === 'gateway' && <ConnectionPanel initialTab="gateway" />}
           {settingsTab === 'auto' && <AutoTradingSystem />}
+          {settingsTab === 'chat' && <ChatVoiceSettings />}
           {settingsTab === 'other' && <OtherSettings />}
         </motion.div>
       </AnimatePresence>
@@ -345,6 +347,148 @@ function SettingGroup({ title, children }: { title: string; children: React.Reac
     <div className="p-2 rounded-lg bg-gray-900/30 border border-gray-800/50 space-y-1.5">
       <div className="text-[10px] font-medium text-gray-300">{title}</div>
       {children}
+    </div>
+  );
+}
+
+// ============================================================
+// TAB: Chat & Voice Settings
+// ============================================================
+function ChatVoiceSettings() {
+  const { chatSettings, voiceSettings, updateChatSettings, updateVoiceSettings } = useTradingStore();
+
+  return (
+    <div className="space-y-2">
+      <SectionTitle title="AI Chat Settings" />
+      <SettingGroup title="Chat Configuration">
+        <ToggleSwitch 
+          label="Enable Chat" 
+          checked={chatSettings.enabled} 
+          onChange={(v) => updateChatSettings({ enabled: v })} 
+        />
+        <div className="mt-2 space-y-2">
+          <div>
+            <label className="text-[9px] text-gray-400 block mb-1">AI Model</label>
+            <div className="grid grid-cols-2 gap-1">
+              {([
+                { id: 'gpt4', label: 'GPT-4', desc: 'Most capable' },
+                { id: 'claude', label: 'Claude', desc: 'Balanced' },
+                { id: 'gemini', label: 'Gemini', desc: 'Fast' },
+                { id: 'local', label: 'Local', desc: 'Privacy' },
+              ] as const).map((model) => (
+                <button
+                  key={model.id}
+                  onClick={() => updateChatSettings({ model: model.id })}
+                  className={`px-2 py-1.5 rounded text-[9px] text-left transition-all ${
+                    chatSettings.model === model.id
+                      ? 'bg-purple-500/20 border border-purple-500/40 text-purple-300'
+                      : 'bg-gray-800/30 border border-gray-700/30 text-gray-400 hover:bg-gray-800/50'
+                  }`}
+                >
+                  <div className="font-medium">{model.label}</div>
+                  <div className="text-[7px] opacity-60">{model.desc}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-[9px] text-gray-400 block mb-1">Personality</label>
+            <div className="flex gap-1">
+              {(['professional', 'friendly', 'concise'] as const).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => updateChatSettings({ personality: p })}
+                  className={`flex-1 px-2 py-1 rounded text-[9px] capitalize transition-all ${
+                    chatSettings.personality === p
+                      ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                      : 'bg-gray-800/30 text-gray-400 border border-gray-700/30'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+          <ToggleSwitch 
+            label="Auto-suggest commands" 
+            checked={chatSettings.autoSuggest} 
+            onChange={(v) => updateChatSettings({ autoSuggest: v })} 
+          />
+          <div>
+            <SliderInput 
+              label="Max chat history" 
+              value={chatSettings.maxHistory} 
+              onChange={(v) => updateChatSettings({ maxHistory: v })} 
+              min={10} 
+              max={100} 
+              step={10} 
+            />
+          </div>
+        </div>
+      </SettingGroup>
+
+      <SectionTitle title="Voice Control Settings" />
+      <SettingGroup title="Voice Configuration">
+        <ToggleSwitch 
+          label="Enable Voice Control" 
+          checked={voiceSettings.enabled} 
+          onChange={(v) => updateVoiceSettings({ enabled: v })} 
+        />
+        <div className="mt-2 space-y-2">
+          <div>
+            <label className="text-[9px] text-gray-400 block mb-1">Language</label>
+            <select
+              value={voiceSettings.language}
+              onChange={(e) => updateVoiceSettings({ language: e.target.value })}
+              className="w-full px-2 py-1 rounded bg-gray-800/80 border border-gray-700/50 text-[10px] text-gray-200 focus:outline-none focus:border-purple-500/50"
+            >
+              <option value="en-US">English (US)</option>
+              <option value="en-GB">English (UK)</option>
+              <option value="id-ID">Indonesian</option>
+              <option value="zh-CN">Chinese (Simplified)</option>
+              <option value="ja-JP">Japanese</option>
+              <option value="ko-KR">Korean</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-[9px] text-gray-400 block mb-1">Wake Word</label>
+            <input
+              type="text"
+              value={voiceSettings.wakeWord}
+              onChange={(e) => updateVoiceSettings({ wakeWord: e.target.value })}
+              className="w-full px-2 py-1 rounded bg-gray-800/80 border border-gray-700/50 text-[10px] text-gray-200 focus:outline-none focus:border-purple-500/50"
+            />
+          </div>
+          <SliderInput 
+            label="Sensitivity" 
+            value={voiceSettings.sensitivity} 
+            onChange={(v) => updateVoiceSettings({ sensitivity: v })} 
+            min={0.1} 
+            max={1} 
+            step={0.1} 
+            format={(v) => `${(v * 100).toFixed(0)}%`}
+          />
+          <SliderInput 
+            label="Voice speed" 
+            value={voiceSettings.voiceSpeed} 
+            onChange={(v) => updateVoiceSettings({ voiceSpeed: v })} 
+            min={0.5} 
+            max={2} 
+            step={0.1} 
+            format={(v) => `${v.toFixed(1)}x`}
+          />
+          <ToggleSwitch 
+            label="Auto-execute voice commands" 
+            checked={voiceSettings.autoExecute} 
+            onChange={(v) => updateVoiceSettings({ autoExecute: v })} 
+          />
+          <ToggleSwitch 
+            label="Voice feedback" 
+            checked={voiceSettings.voiceFeedback} 
+            onChange={(v) => updateVoiceSettings({ voiceFeedback: v })} 
+          />
+        </div>
+      </SettingGroup>
     </div>
   );
 }

@@ -1,18 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useTradingStore, type CandleData } from '../store/tradingStore';
 
 // ============================================================
-// TRADING CHART COMPONENT
-// Features: Candlestick + Linear chart, volume bars, indicators
+// TRADING CHART COMPONENT - LIVE
+// Features: Real-time candlestick + linear chart, volume bars, indicators
 // ============================================================
 
 export default function TradingChart() {
-  const { chartData, marketConfig, updateMarketConfig, status } = useTradingStore();
+  const { chartData, marketConfig, updateMarketConfig, status, addChartData } = useTradingStore();
   const [hoveredCandle, setHoveredCandle] = useState<CandleData | null>(null);
   const [showVolume, setShowVolume] = useState(true);
   const [showEMA, setShowEMA] = useState(true);
   const [showBB, setShowBB] = useState(false);
+  const [isLive, setIsLive] = useState(true);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const chartTypes: { id: 'candlestick' | 'linear'; label: string; icon: string }[] = [
     { id: 'candlestick', label: 'Candle', icon: '🕯️' },
@@ -96,6 +98,55 @@ export default function TradingChart() {
   const priceChange = lastPrice - prevPrice;
   const priceChangePercent = ((priceChange / prevPrice) * 100);
 
+  // Live chart updates
+  useEffect(() => {
+    if (isLive && status === 'running') {
+      intervalRef.current = setInterval(() => {
+        const lastCandle = chartData[chartData.length - 1];
+        if (!lastCandle) return;
+
+        // Simulate price movement
+        const volatility = lastCandle.close * 0.001;
+        const change = (Math.random() - 0.5) * volatility;
+        const newPrice = lastCandle.close + change;
+        
+        // Update current candle or create new one
+        const now = Date.now();
+        const timeDiff = now - lastCandle.time;
+        
+        if (timeDiff > 60000) { // New candle every minute
+          const newCandle: CandleData = {
+            time: now,
+            open: newPrice,
+            high: newPrice,
+            low: newPrice,
+            close: newPrice,
+            volume: Math.floor(Math.random() * 1000),
+          };
+          addChartData(newCandle);
+        } else {
+          // Update current candle
+          const updatedCandle: CandleData = {
+            ...lastCandle,
+            high: Math.max(lastCandle.high, newPrice),
+            low: Math.min(lastCandle.low, newPrice),
+            close: newPrice,
+            volume: lastCandle.volume + Math.floor(Math.random() * 100),
+          };
+          // Replace last candle
+          const newData = [...chartData.slice(0, -1), updatedCandle];
+          useTradingStore.setState({ chartData: newData });
+        }
+      }, 1000); // Update every second
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isLive, status, chartData, addChartData]);
+
   return (
     <div className="space-y-2">
       {/* Chart Header */}
@@ -106,8 +157,30 @@ export default function TradingChart() {
             {lastPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             <span className="ml-1 text-[10px]">{priceChange >= 0 ? '▲' : '▼'} {Math.abs(priceChangePercent).toFixed(2)}%</span>
           </span>
+          {/* Live indicator */}
+          {isLive && status === 'running' && (
+            <motion.div
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/20 border border-red-500/40"
+              animate={{ opacity: [1, 0.5, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+              <span className="text-[9px] text-red-400 font-medium">LIVE</span>
+            </motion.div>
+          )}
         </div>
         <div className="flex items-center gap-1">
+          {/* Live toggle */}
+          <button
+            onClick={() => setIsLive(!isLive)}
+            className={`px-2 py-0.5 rounded text-[10px] font-medium transition-all ${
+              isLive
+                ? 'bg-green-500/30 text-green-300 border border-green-500/50'
+                : 'bg-gray-700/30 text-gray-500 border border-gray-700/50'
+            }`}
+          >
+            {isLive ? '● Live' : '○ Paused'}
+          </button>
           {chartTypes.map((ct) => (
             <button
               key={ct.id}

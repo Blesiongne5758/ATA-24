@@ -193,7 +193,7 @@ interface TradingState {
   equity: number;
   
   // UI State
-  activePanel: 'chart' | 'dashboard' | 'logs' | 'simulation' | 'chat' | 'voice';
+  activePanel: 'chart' | 'dashboard' | 'logs' | 'simulation' | 'chat' | 'voice' | 'prompts';
   settingsTab: 'market' | 'technical' | 'risk' | 'ai' | 'mt5' | 'api' | 'gateway' | 'auto' | 'chat' | 'other';
   
   // Chat Settings

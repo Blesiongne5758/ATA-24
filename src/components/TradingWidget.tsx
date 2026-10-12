@@ -9,11 +9,12 @@ import TradingChart from './TradingChart';
 import SimulationEngine from './SimulationEngine';
 import ChatAI from './ChatAI';
 import VoiceControl from './VoiceControl';
+import PromptLibrary from './PromptLibrary';
 import { useTradingStore } from '../store/tradingStore';
 
 // ============================================================
 // MAIN TRADING WIDGET COMPONENT - v2.0
-// Features: Chart, Controls, Settings (10 tabs), Simulation, Logs, Chat, Voice
+// Features: Chart, Controls, Settings (10 tabs), Simulation, Logs, Chat, Voice, Prompts
 // ============================================================
 
 export default function TradingWidget() {
@@ -22,6 +23,7 @@ export default function TradingWidget() {
 
   const panels = [
     { id: 'chart' as const, label: 'Chart', icon: '📊' },
+    { id: 'prompts' as const, label: 'Prompts', icon: '📚' },
     { id: 'chat' as const, label: 'Chat', icon: '💬' },
     { id: 'voice' as const, label: 'Voice', icon: '🎤' },
     { id: 'simulation' as const, label: 'Sim', icon: '🔬' },
@@ -127,6 +129,11 @@ export default function TradingWidget() {
             {activePanel === 'chart' && (
               <motion.div key="chart" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <TradingChart />
+              </motion.div>
+            )}
+            {activePanel === 'prompts' && (
+              <motion.div key="prompts" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <PromptLibrary />
               </motion.div>
             )}
             {activePanel === 'chat' && (

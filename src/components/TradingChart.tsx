@@ -98,46 +98,63 @@ export default function TradingChart() {
   const priceChange = lastPrice - prevPrice;
   const priceChangePercent = ((priceChange / prevPrice) * 100);
 
-  // Live chart updates
+  // Live chart updates with realistic price simulation
   useEffect(() => {
     if (isLive && status === 'running') {
+      let trend = 0;
+      let momentum = 0;
+      let volatility = 0.002;
+      
       intervalRef.current = setInterval(() => {
         const lastCandle = chartData[chartData.length - 1];
         if (!lastCandle) return;
 
-        // Simulate price movement
-        const volatility = lastCandle.close * 0.001;
-        const change = (Math.random() - 0.5) * volatility;
+        // Realistic price simulation with trends and momentum
+        // Change trend occasionally
+        if (Math.random() < 0.05) {
+          trend = (Math.random() - 0.5) * 0.003;
+        }
+        
+        // Momentum builds up
+        momentum = momentum * 0.95 + trend * 0.05;
+        
+        // Volatility changes
+        volatility = 0.001 + Math.random() * 0.003;
+        
+        // Price movement with trend + momentum + noise
+        const noise = (Math.random() - 0.5) * volatility;
+        const change = lastCandle.close * (momentum + noise);
         const newPrice = lastCandle.close + change;
         
         // Update current candle or create new one
         const now = Date.now();
         const timeDiff = now - lastCandle.time;
         
-        if (timeDiff > 60000) { // New candle every minute
+        if (timeDiff > 5000) { // New candle every 5 seconds for demo
           const newCandle: CandleData = {
             time: now,
             open: newPrice,
             high: newPrice,
             low: newPrice,
             close: newPrice,
-            volume: Math.floor(Math.random() * 1000),
+            volume: Math.floor(Math.random() * 5000 + 1000),
           };
           addChartData(newCandle);
         } else {
-          // Update current candle
+          // Update current candle with realistic wicks
+          const wickSize = Math.abs(change) * (0.5 + Math.random());
           const updatedCandle: CandleData = {
             ...lastCandle,
-            high: Math.max(lastCandle.high, newPrice),
-            low: Math.min(lastCandle.low, newPrice),
+            high: Math.max(lastCandle.high, newPrice + wickSize * 0.5),
+            low: Math.min(lastCandle.low, newPrice - wickSize * 0.5),
             close: newPrice,
-            volume: lastCandle.volume + Math.floor(Math.random() * 100),
+            volume: lastCandle.volume + Math.floor(Math.random() * 500),
           };
           // Replace last candle
           const newData = [...chartData.slice(0, -1), updatedCandle];
           useTradingStore.setState({ chartData: newData });
         }
-      }, 1000); // Update every second
+      }, 500); // Update every 500ms for smooth animation
     }
 
     return () => {

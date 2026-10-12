@@ -194,7 +194,7 @@ interface TradingState {
   
   // UI State
   activePanel: 'chart' | 'dashboard' | 'logs' | 'simulation' | 'chat' | 'voice' | 'prompts';
-  settingsTab: 'market' | 'technical' | 'risk' | 'ai' | 'mt5' | 'api' | 'gateway' | 'auto' | 'chat' | 'other';
+  settingsTab: 'market' | 'technical' | 'risk' | 'ai' | 'mt5' | 'api' | 'gateway' | 'auto' | 'chat' | 'download' | 'other';
   
   // Chat Settings
   chatSettings: {

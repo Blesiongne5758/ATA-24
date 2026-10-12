@@ -3,10 +3,11 @@ import { useTradingStore } from '../store/tradingStore';
 import MarketSelector from './MarketSelector';
 import ConnectionPanel from './ConnectionPanel';
 import AutoTradingSystem from './AutoTradingSystem';
+import DownloadClient from './DownloadClient';
 
 // ============================================================
 // SETTINGS PANEL COMPONENT - v2.0
-// Features: 8 tabs - Market, Technical, Risk, AI, MT5, API, Gateway, Auto, Other
+// Features: 11 tabs - Market, Technical, Risk, AI, MT5, API, Gateway, Auto, Chat, Download, Other
 // ============================================================
 
 export default function SettingsPanel() {
@@ -22,6 +23,7 @@ export default function SettingsPanel() {
     { id: 'gateway' as const, label: 'GW', icon: '🌐' },
     { id: 'auto' as const, label: 'Auto', icon: '🤖' },
     { id: 'chat' as const, label: 'Chat', icon: '💬' },
+    { id: 'download' as const, label: 'Download', icon: '📥' },
     { id: 'other' as const, label: 'Other', icon: '⚙️' },
   ];
 
@@ -64,6 +66,7 @@ export default function SettingsPanel() {
           {settingsTab === 'gateway' && <ConnectionPanel initialTab="gateway" />}
           {settingsTab === 'auto' && <AutoTradingSystem />}
           {settingsTab === 'chat' && <ChatVoiceSettings />}
+          {settingsTab === 'download' && <DownloadClient />}
           {settingsTab === 'other' && <OtherSettings />}
         </motion.div>
       </AnimatePresence>

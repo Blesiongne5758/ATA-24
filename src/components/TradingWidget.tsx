@@ -8,10 +8,12 @@ import SupremeCommandCenter from './SupremeCommandCenter';
 import MarketFooter from './MarketFooter';
 import { ActivityLog, StatsDashboard, SimulationEngine, ChatAI, VoiceControl, PromptLibrary } from './Panels';
 import { useTradingStore } from '../store/tradingStore';
+import { useAuthStore } from '../store/authStore';
 
 export default function TradingWidget() {
   const [showSettings, setShowSettings] = useState(false);
   const { status, activePanel, setActivePanel, isCommandCenterView, toggleCommandCenter } = useTradingStore();
+  const { user, logout } = useAuthStore();
 
   // If Command Center view is active, render it instead
   if (isCommandCenterView) {
@@ -51,9 +53,29 @@ export default function TradingWidget() {
               <button onClick={() => setShowSettings(!showSettings)} className={`p-1.5 rounded-lg transition-all ${showSettings ? 'bg-purple-500/20 text-purple-400 border border-purple-500/40' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'}`}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m-7-7h6m6 0h6"/></svg>
               </button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={logout}
+                className="p-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 transition-all"
+                title="Logout"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+              </motion.button>
             </div>
           </div>
-          <p className="text-[9px] text-gray-600 mt-0.5 ml-4">Multi-Routing Neural Engine • 6 Markets • MT5 • API Gateway</p>
+          <div className="flex items-center gap-2 mt-0.5 ml-4">
+            <p className="text-[9px] text-gray-600">Multi-Routing Neural Engine • 6 Markets • MT5 • API Gateway</p>
+            {user && (
+              <span className="text-[9px] text-purple-400">
+                👤 {user.name} ({user.role})
+              </span>
+            )}
+          </div>
         </div>
 
         <AIOverlordAvatar />

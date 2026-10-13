@@ -14,6 +14,7 @@ export default function SettingsPanel() {
     { id: 'gateway', label: 'GW', icon: '🌐' },
     { id: 'auto', label: 'Auto', icon: '🤖' },
     { id: 'chat', label: 'Chat', icon: '💬' },
+    { id: 'websocket', label: 'WebSocket', icon: '🔌' },
     { id: 'download', label: 'Download', icon: '📥' },
     { id: 'other', label: 'Other', icon: '⚙️' },
   ];
@@ -34,6 +35,7 @@ export default function SettingsPanel() {
           {settingsTab === 'gateway' && <GatewayTab />}
           {settingsTab === 'auto' && <AutoTab />}
           {settingsTab === 'chat' && <ChatSettingsTab />}
+          {settingsTab === 'websocket' && <WebSocketTab />}
           {settingsTab === 'download' && <DownloadTab />}
           {settingsTab === 'other' && <OtherTab />}
         </motion.div>
@@ -184,6 +186,72 @@ function OtherTab() {
       <SettingGroup title="Data Export"><div className="grid grid-cols-2 gap-1.5"><button className="px-2 py-1.5 rounded text-[9px] bg-blue-500/10 text-blue-400 border border-blue-500/30">📥 Export Trades</button><button className="px-2 py-1.5 rounded text-[9px] bg-green-500/10 text-green-400 border border-green-500/30">📥 Export Settings</button></div></SettingGroup>
       <SettingGroup title="System"><div className="space-y-1.5 text-[9px]"><div className="flex justify-between"><span className="text-gray-500">CPU</span><span className="text-gray-300">12%</span></div><div className="flex justify-between"><span className="text-gray-500">Memory</span><span className="text-gray-300">256 MB</span></div><div className="flex justify-between"><span className="text-gray-500">Uptime</span><span className="text-gray-300">2h 34m</span></div></div></SettingGroup>
       <div className="text-[9px] text-gray-500 text-center p-2">PJ.BOT AI Trading Agent v2.0<br/>Build: 2024</div>
+    </div>
+  );
+}
+
+function WebSocketTab() {
+  const { websocketConfig, updateWebSocketConfig } = useTradingStore();
+  
+  return (
+    <div className="space-y-2">
+      <SectionTitle title="WebSocket Configuration" />
+      <SettingGroup title="Connection">
+        <Toggle label="Enable WebSocket" checked={websocketConfig.enabled} onChange={(v) => updateWebSocketConfig({ enabled: v })} />
+        <div className="mt-2">
+          <label className="text-[9px] text-gray-400 block mb-1">WebSocket URL</label>
+          <input
+            type="text"
+            value={websocketConfig.url}
+            onChange={(e) => updateWebSocketConfig({ url: e.target.value })}
+            placeholder="ws://localhost:3001"
+            className="w-full px-2 py-1.5 rounded bg-gray-800/80 border border-gray-700/50 text-[10px] text-gray-200 font-mono placeholder:text-gray-600 focus:outline-none focus:border-purple-500/50"
+          />
+        </div>
+        <div className="mt-2 p-2 rounded bg-gray-950/50 border border-gray-800/30">
+          <div className="flex items-center justify-between text-[9px]">
+            <span className="text-gray-500">Status</span>
+            <span className={`font-medium ${
+              websocketConfig.connectionStatus === 'connected' ? 'text-green-400' :
+              websocketConfig.connectionStatus === 'connecting' ? 'text-yellow-400' :
+              websocketConfig.connectionStatus === 'error' ? 'text-red-400' : 'text-gray-400'
+            }`}>
+              {websocketConfig.connectionStatus.toUpperCase()}
+            </span>
+          </div>
+        </div>
+      </SettingGroup>
+      
+      <SectionTitle title="Connection Settings" />
+      <SettingGroup title="Reconnection">
+        <div className="grid grid-cols-2 gap-2">
+          <NumInput label="Reconnect Interval (ms)" value={websocketConfig.reconnectInterval} onChange={(v) => updateWebSocketConfig({ reconnectInterval: v })} min={1000} max={60000} step={1000} />
+          <NumInput label="Max Reconnect Attempts" value={websocketConfig.maxReconnectAttempts} onChange={(v) => updateWebSocketConfig({ maxReconnectAttempts: v })} min={1} max={20} />
+        </div>
+      </SettingGroup>
+      
+      <SettingGroup title="Heartbeat">
+        <NumInput label="Heartbeat Interval (ms)" value={websocketConfig.heartbeatInterval} onChange={(v) => updateWebSocketConfig({ heartbeatInterval: v })} min={5000} max={120000} step={5000} />
+      </SettingGroup>
+      
+      <SectionTitle title="Channels" />
+      <SettingGroup title="Subscribe Channels">
+        <div className="space-y-1.5">
+          {['trades', 'ticker', 'orderbook', 'kline', 'depth'].map((channel) => (
+            <Toggle
+              key={channel}
+              label={channel.charAt(0).toUpperCase() + channel.slice(1)}
+              checked={websocketConfig.channels.includes(channel)}
+              onChange={(checked) => {
+                const channels = checked
+                  ? [...websocketConfig.channels, channel]
+                  : websocketConfig.channels.filter(c => c !== channel);
+                updateWebSocketConfig({ channels });
+              }}
+            />
+          ))}
+        </div>
+      </SettingGroup>
     </div>
   );
 }

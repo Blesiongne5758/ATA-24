@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTradingStore } from '../store/tradingStore';
 
-export default function TradingChart() {
+interface TradingChartProps {
+  compact?: boolean;
+}
+
+export default function TradingChart({ compact = false }: TradingChartProps) {
   const { chartData, marketConfig, updateMarketConfig, status, addChartData } = useTradingStore();
   const [isLive, setIsLive] = useState(true);
   const intervalRef = useRef<any>(null);
@@ -39,29 +43,32 @@ export default function TradingChart() {
   const priceRange = maxPrice - minPrice || 1;
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-white font-mono">{marketConfig.pair}</span>
-          <span className={`text-xs font-mono ${priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-            ${lastPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            <span className="ml-1 text-[10px]">{priceChange >= 0 ? '▲' : '▼'} {Math.abs((priceChange / prevPrice) * 100).toFixed(2)}%</span>
-          </span>
-          {isLive && status === 'running' && (
-            <motion.div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/20 border border-red-500/40" animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
-              <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-              <span className="text-[9px] text-red-400 font-medium">LIVE</span>
-            </motion.div>
-          )}
+    <div className={compact ? '' : 'space-y-2'}>
+      {/* Header - only show when not in compact mode */}
+      {!compact && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-white font-mono">{marketConfig.pair}</span>
+            <span className={`text-xs font-mono ${priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              ${lastPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              <span className="ml-1 text-[10px]">{priceChange >= 0 ? '▲' : '▼'} {Math.abs((priceChange / prevPrice) * 100).toFixed(2)}%</span>
+            </span>
+            {isLive && status === 'running' && (
+              <motion.div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/20 border border-red-500/40" animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                <span className="text-[9px] text-red-400 font-medium">LIVE</span>
+              </motion.div>
+            )}
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setIsLive(!isLive)} className={`px-2 py-0.5 rounded text-[10px] font-medium ${isLive ? 'bg-green-500/30 text-green-300 border border-green-500/50' : 'bg-gray-700/30 text-gray-500 border border-gray-700/50'}`}>
+              {isLive ? '● Live' : '○ Paused'}
+            </button>
+            <button onClick={() => updateMarketConfig({ chartType: 'candlestick' })} className={`px-2 py-0.5 rounded text-[10px] ${marketConfig.chartType === 'candlestick' ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50' : 'text-gray-500'}`}>🕯️</button>
+            <button onClick={() => updateMarketConfig({ chartType: 'linear' })} className={`px-2 py-0.5 rounded text-[10px] ${marketConfig.chartType === 'linear' ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50' : 'text-gray-500'}`}>📈</button>
+          </div>
         </div>
-        <div className="flex items-center gap-1">
-          <button onClick={() => setIsLive(!isLive)} className={`px-2 py-0.5 rounded text-[10px] font-medium ${isLive ? 'bg-green-500/30 text-green-300 border border-green-500/50' : 'bg-gray-700/30 text-gray-500 border border-gray-700/50'}`}>
-            {isLive ? '● Live' : '○ Paused'}
-          </button>
-          <button onClick={() => updateMarketConfig({ chartType: 'candlestick' })} className={`px-2 py-0.5 rounded text-[10px] ${marketConfig.chartType === 'candlestick' ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50' : 'text-gray-500'}`}>🕯️</button>
-          <button onClick={() => updateMarketConfig({ chartType: 'linear' })} className={`px-2 py-0.5 rounded text-[10px] ${marketConfig.chartType === 'linear' ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50' : 'text-gray-500'}`}>📈</button>
-        </div>
-      </div>
+      )}
       <div className="relative rounded-lg bg-gray-950/50 border border-gray-800/50 overflow-hidden">
         <svg viewBox="0 0 600 200" className="w-full h-[180px]" preserveAspectRatio="none">
           {marketConfig.chartType === 'candlestick' ? (

@@ -1,7 +1,16 @@
 import { motion } from 'framer-motion';
 import TradingWidget from './components/TradingWidget';
+import LoginPage from './components/LoginPage';
+import { useAuthStore } from './store/authStore';
 
 function App() {
+  const { isAuthenticated } = useAuthStore();
+
+  // Jika belum login, tampilkan halaman login
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
   return (
     <div className="min-h-screen w-full bg-[#050211] flex flex-col items-center justify-start py-6 px-4 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

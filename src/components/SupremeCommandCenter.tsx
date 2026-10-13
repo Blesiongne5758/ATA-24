@@ -17,10 +17,10 @@ export default function SupremeCommandCenter() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-[#050211] overflow-auto"
+      className="fixed inset-0 z-50 bg-[#050211] flex flex-col h-screen"
     >
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gray-900/95 backdrop-blur-sm border-b border-purple-500/20 px-6 py-3">
+      <div className="flex-shrink-0 bg-gray-900/95 backdrop-blur-sm border-b border-purple-500/20 px-6 py-3">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <motion.div
@@ -60,7 +60,7 @@ export default function SupremeCommandCenter() {
       </div>
 
       {/* Main Content */}
-      <div className="p-6 space-y-6">
+      <div className="flex-1 overflow-auto p-6 space-y-6">
         {/* Control Panel */}
         <div className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-4">
           <ControlPanel />
@@ -163,6 +163,26 @@ export default function SupremeCommandCenter() {
             <ServerStatus name="WebSocket Hub" status="online" latency={8} />
             <ServerStatus name="Data Feed" status="online" latency={15} />
           </div>
+        </div>
+
+      </div>
+
+      {/* Market Icons Footer - Always at bottom with flex-shrink-0 */}
+      <div className="flex-shrink-0 border-t border-gray-800/30 bg-gray-900/95 backdrop-blur-sm px-6 py-4">
+        <div className="grid grid-cols-7 gap-1.5 max-w-7xl mx-auto">
+          {[{ icon: '₿', label: 'Crypto' }, { icon: '💱', label: 'Forex' }, { icon: '📊', label: 'Stocks' }, { icon: '🛢️', label: 'Commodity' }, { icon: '📈', label: 'Indices' }, { icon: '🎯', label: 'Options' }, { icon: '🐸', label: 'Meme Coin' }].map((market) => (
+            <div key={market.label} className="p-1.5 rounded-lg bg-gray-900/30 border border-gray-800/30 text-center">
+              <div className="text-sm">{market.icon}</div>
+              <div className="text-[7px] text-gray-600 mt-0.5">{market.label}</div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 flex items-center justify-center gap-3 text-[8px] text-gray-600">
+          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-purple-500" />Technical</span>
+          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-blue-500" />Sentiment</span>
+          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-cyan-500" />On-Chain</span>
+          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-green-500" />ML</span>
+          <span className="text-purple-500">→ Meta-Agent → Decision</span>
         </div>
       </div>
     </motion.div>

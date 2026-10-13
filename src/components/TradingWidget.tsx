@@ -98,6 +98,25 @@ export default function TradingWidget() {
         <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-purple-500/20 rounded-bl-2xl" />
         <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-purple-500/20 rounded-br-2xl" />
       </motion.div>
+
+      {/* Market Icons Footer - Only shown when Command Center is NOT active */}
+      <motion.div className="mt-4 w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.6 }}>
+        <div className="grid grid-cols-7 gap-1.5">
+          {[{ icon: '₿', label: 'Crypto' }, { icon: '💱', label: 'Forex' }, { icon: '📊', label: 'Stocks' }, { icon: '🛢️', label: 'Commodity' }, { icon: '📈', label: 'Indices' }, { icon: '🎯', label: 'Options' }, { icon: '🐸', label: 'Meme Coin' }].map((market) => (
+            <div key={market.label} className="p-1.5 rounded-lg bg-gray-900/30 border border-gray-800/30 text-center">
+              <div className="text-sm">{market.icon}</div>
+              <div className="text-[7px] text-gray-600 mt-0.5">{market.label}</div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 flex items-center justify-center gap-3 text-[8px] text-gray-600">
+          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-purple-500" />Technical</span>
+          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-blue-500" />Sentiment</span>
+          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-cyan-500" />On-Chain</span>
+          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-green-500" />ML</span>
+          <span className="text-purple-500">→ Meta-Agent → Decision</span>
+        </div>
+      </motion.div>
     </div>
   );
 }

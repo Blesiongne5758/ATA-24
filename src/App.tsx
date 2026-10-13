@@ -25,24 +25,6 @@ function App() {
       <div className="relative z-10 w-full max-w-lg">
         <TradingWidget />
       </div>
-
-      <motion.div className="relative z-10 mt-4 max-w-lg w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.6 }}>
-        <div className="grid grid-cols-7 gap-1.5">
-          {[{ icon: '₿', label: 'Crypto' }, { icon: '💱', label: 'Forex' }, { icon: '📊', label: 'Stocks' }, { icon: '🛢️', label: 'Commodity' }, { icon: '📈', label: 'Indices' }, { icon: '🎯', label: 'Options' }, { icon: '🐸', label: 'Meme Coin' }].map((market) => (
-            <div key={market.label} className="p-1.5 rounded-lg bg-gray-900/30 border border-gray-800/30 text-center">
-              <div className="text-sm">{market.icon}</div>
-              <div className="text-[7px] text-gray-600 mt-0.5">{market.label}</div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-2 flex items-center justify-center gap-3 text-[8px] text-gray-600">
-          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-purple-500" />Technical</span>
-          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-blue-500" />Sentiment</span>
-          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-cyan-500" />On-Chain</span>
-          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-green-500" />ML</span>
-          <span className="text-purple-500">→ Meta-Agent → Decision</span>
-        </div>
-      </motion.div>
     </div>
   );
 }

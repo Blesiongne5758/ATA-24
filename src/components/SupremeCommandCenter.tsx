@@ -20,25 +20,25 @@ export default function SupremeCommandCenter() {
       className="fixed inset-0 z-50 bg-[#050211] overflow-auto"
     >
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gray-900/95 backdrop-blur-sm border-b border-purple-500/20 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="sticky top-0 z-10 bg-gray-900/95 backdrop-blur-sm border-b border-purple-500/20 px-6 py-3">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <motion.div
-              className="w-3 h-3 rounded-full bg-purple-500"
+              className="w-3 h-3 rounded-full bg-purple-500 flex-shrink-0"
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
             />
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-xl font-bold text-white truncate">
               <span className="text-purple-400">⚡</span> Supreme Agent Command Center
             </h1>
-            <span className="text-xs px-2 py-1 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40">
+            <span className="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 flex-shrink-0 hidden sm:inline-block">
               MULTI-TRADING SERVER
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="text-xs text-gray-400">Status</div>
-              <div className={`text-sm font-bold ${
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="text-right hidden md:block">
+              <div className="text-[10px] text-gray-400">Status</div>
+              <div className={`text-xs font-bold ${
                 status === 'running' ? 'text-green-400' :
                 status === 'simulating' ? 'text-blue-400' :
                 status === 'paused' ? 'text-yellow-400' :
@@ -51,9 +51,9 @@ export default function SupremeCommandCenter() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleCommandCenter}
-              className="px-4 py-2 rounded-lg bg-gray-700/50 border border-gray-600/50 text-gray-300 text-sm font-medium hover:bg-gray-700 transition-all"
+              className="px-3 py-1.5 rounded-lg bg-gray-700/50 border border-gray-600/50 text-gray-300 text-xs font-medium hover:bg-gray-700 transition-all whitespace-nowrap"
             >
-              ✕ Exit Command Center
+              ✕ Exit
             </motion.button>
           </div>
         </div>
@@ -70,58 +70,66 @@ export default function SupremeCommandCenter() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Chart 1 - Primary Market */}
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 Chart 1: {marketConfig.pair} (Primary)
               </h3>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30">
-                LIVE
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30">
+                  LIVE
+                </span>
+              </div>
             </div>
-            <TradingChart />
+            <TradingChart compact={true} />
           </div>
 
           {/* Chart 2 - Secondary Market */}
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                 Chart 2: ETH/USDT (Secondary)
               </h3>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                LIVE
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  LIVE
+                </span>
+              </div>
             </div>
-            <TradingChart />
+            <TradingChart compact={true} />
           </div>
 
           {/* Chart 3 - Meme Coin */}
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
                 Chart 3: DOGE/USDT (Meme)
               </h3>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                LIVE
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                  LIVE
+                </span>
+              </div>
             </div>
-            <TradingChart />
+            <TradingChart compact={true} />
           </div>
 
           {/* Chart 4 - Forex */}
           <div className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
                 Chart 4: EUR/USD (Forex)
               </h3>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                LIVE
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                  LIVE
+                </span>
+              </div>
             </div>
-            <TradingChart />
+            <TradingChart compact={true} />
           </div>
         </div>
 

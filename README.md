@@ -47,12 +47,14 @@ Sistem trading AI multi-agent yang komprehensif dengan chart real-time, chat AI,
 - **System Requirements**: Detail requirements per platform
 - **Installation Guide**: Step-by-step installation instructions
 
-### 🎨 Robot Avatar
-- **Cute Robot Character**: SVG animated robot woman
+### 🎨 AI Overlord Avatar
+- **Character Image**: Avatar dengan efek visual epic
 - **Purple Aura Effect**: Glowing purple aura saat agent active
 - **Multi-Routing Particles**: Particle network animation
-- **Blinking Eyes**: Animasi mata berkedip
-- **Sweet Smile**: Animasi senyum manis
+- **Sub-Agent Orbs**: 3 orbs berputar mengelilingi karakter
+- **Energy Beams**: Beam energi menghubungkan karakter ke sub-agents
+- **Floating Kanji**: 8 kanji Jepang melayang dengan rotasi
+- **Dimensional Rings**: 3 concentric rings berputar
 
 ## 📋 Daftar Lengkap Fitur
 
@@ -239,6 +241,19 @@ npm run dev
 npm run build
 ```
 
+### Multi-Platform Build
+
+```bash
+# Build all platforms
+./build-all.sh
+
+# Build specific platforms
+./build-all.sh web          # Web only
+./build-all.sh desktop      # Desktop only (Electron)
+./build-all.sh mobile       # Mobile only (Capacitor)
+./build-all.sh web desktop  # Web + Desktop
+```
+
 ### Usage
 
 1. **Start Agent**: Klik "▶ RUN AGENT" untuk memulai
@@ -253,15 +268,22 @@ npm run build
 ## 📖 Documentation
 
 ### Main Documentation
-- [README.md](./README.md) - This file
+- [BUILD_GUIDE.md](./BUILD_GUIDE.md) - **Multi-platform build guide (Web, Desktop, Mobile)**
+- [SHIBAI_AVATAR.md](./SHIBAI_AVATAR.md) - AI Overlord Avatar documentation
+- [AI_OVERLORD_AVATAR.md](./AI_OVERLORD_AVATAR.md) - Character image avatar guide
 - [PROMPT_LIBRARY.md](./PROMPT_LIBRARY.md) - Prompt Library documentation
 - [DOWNLOAD_CLIENT.md](./DOWNLOAD_CLIENT.md) - Download Client guide
+- [ELECTRON_SETUP.md](./ELECTRON_SETUP.md) - Electron desktop app setup
+- [MOBILE_SETUP.md](./MOBILE_SETUP.md) - Capacitor mobile app setup
+- [ANDROID_SETUP.md](./ANDROID_SETUP.md) - Android Studio setup guide
+- [IOS_SETUP.md](./IOS_SETUP.md) - Xcode setup guide
 
 ### Component Documentation
 - `src/components/TradingChart.tsx` - Live chart component
 - `src/components/ChatAI.tsx` - Chat AI component
 - `src/components/VoiceControl.tsx` - Voice control component
 - `src/components/PromptLibrary.tsx` - Prompt library UI
+- `src/components/AIOverlordAvatar.tsx` - AI Overlord avatar
 - `src/components/DownloadClient.tsx` - Download client component
 - `src/components/SettingsPanel.tsx` - Settings panel with 11 tabs
 
@@ -341,7 +363,7 @@ npm run build
 - **Total Templates**: 12
 - **Total Categories**: 6
 - **Total Sub-Agents**: 12
-- **Build Size**: ~390 KB (gzipped: ~116 KB)
+- **Build Size**: ~320 KB (gzipped: ~99 KB)
 - **Load Time**: < 2s
 
 ### Browser Support
@@ -360,6 +382,18 @@ npm run build
 - **Zustand 5.0.15** - State management
 - **Vite 6.3.5** - Build tool
 
+### Desktop (Electron)
+- **Electron 33.2.1** - Desktop framework
+- **Electron Builder 25.1.8** - Build tool
+- **Concurrently** - Parallel scripts
+- **Wait-on** - Dev server wait
+
+### Mobile (Capacitor)
+- **Capacitor Core** - Mobile framework
+- **Capacitor CLI** - Build tool
+- **Capacitor Android** - Android platform
+- **Capacitor iOS** - iOS platform
+
 ### Backend (Python)
 - **FastAPI** - API framework
 - **NumPy** - Numerical computations
@@ -376,8 +410,8 @@ npm run build
 
 ### Desktop Client
 - ✅ Windows 10/11 (64-bit)
-- 🔄 macOS (planned)
-- 🔄 Linux (planned)
+- ✅ macOS (Intel & Apple Silicon)
+- ✅ Linux (Ubuntu, Debian, Fedora, dll)
 
 ### Mobile Client
 - ✅ Android 8.0+
@@ -422,6 +456,11 @@ npm run build
 - Try different browser
 - Clear browser cache
 
+**Build failed?**
+- Check `BUILD_GUIDE.md` for detailed troubleshooting
+- Ensure all dependencies installed
+- Check Node.js version (v18+)
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
@@ -442,6 +481,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Tailwind CSS for the utility-first CSS framework
 - Framer Motion for smooth animations
 - Zustand for simple state management
+- Electron for desktop app support
+- Capacitor for mobile app support
 - All contributors and supporters
 
 ## 📞 Contact
@@ -460,27 +501,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] Voice control
 - [x] Prompt library
 - [x] Download client
+- [x] AI Overlord Avatar
+- [x] Multi-platform build scripts
 
 ### Q2 2024
-- [ ] macOS desktop client
-- [ ] Linux desktop client
-- [ ] Browser extension
-- [ ] Auto-renewal subscriptions
-- [ ] Multi-device licensing
-
-### Q3 2024
 - [ ] Advanced backtesting engine
 - [ ] Strategy marketplace
 - [ ] Social trading features
 - [ ] Mobile app improvements
 - [ ] Performance optimizations
 
-### Q4 2024
+### Q3 2024
 - [ ] AI model improvements
 - [ ] More exchange integrations
 - [ ] Advanced analytics
 - [ ] Enterprise features
 - [ ] API v2.0
+
+### Q4 2024
+- [ ] Machine learning enhancements
+- [ ] Multi-language support
+- [ ] Advanced risk management
+- [ ] Portfolio optimization
+- [ ] Cloud synchronization
 
 ## 📈 Stats
 

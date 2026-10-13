@@ -1,0 +1,96 @@
+appId: com.pjbot.ai-trading-agent
+productName: PJ.BOT AI Trading Agent
+copyright: Copyright © 2024 PJ.BOT Team
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - dist/**/*
+  - electron/**/*
+  - package.json
+  - node_modules/**/*
+
+asar: true
+compression: maximum
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  icon: build/icon.ico
+  artifactName: ${productName}-Setup-${version}-${arch}.${ext}
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+  shortcutName: PJ.BOT AI Trading Agent
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutPath: PJ.BOT AI Trading Agent
+
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  icon: build/icon.icns
+  category: public.app-category.finance
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+
+dmg:
+  sign: false
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+linux:
+  target:
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64
+    - target: rpm
+      arch:
+        - x64
+  icon: build/icons
+  category: Finance
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  maintainer: PJ.BOT Team <support@pjbot.ai>
+  vendor: PJ.BOT
+  synopsis: AI-Powered Multi-Routing Trading Agent
+  description: >
+    Advanced AI trading agent with multi-routing architecture,
+    supporting crypto, forex, stocks, commodities, indices, and options.
+
+publish:
+  provider: generic
+  url: https://releases.pjbot.ai
+
+# Auto-update configuration
+electronUpdaterCompatibility: ">= 2.16"

@@ -4,12 +4,18 @@ import AIOverlordAvatar from './AIOverlordAvatar';
 import ControlPanel from './ControlPanel';
 import SettingsPanel from './SettingsPanel';
 import TradingChart from './TradingChart';
+import SupremeCommandCenter from './SupremeCommandCenter';
 import { ActivityLog, StatsDashboard, SimulationEngine, ChatAI, VoiceControl, PromptLibrary } from './Panels';
 import { useTradingStore } from '../store/tradingStore';
 
 export default function TradingWidget() {
   const [showSettings, setShowSettings] = useState(false);
-  const { status, activePanel, setActivePanel } = useTradingStore();
+  const { status, activePanel, setActivePanel, isCommandCenterView, toggleCommandCenter } = useTradingStore();
+
+  // If Command Center view is active, render it instead
+  if (isCommandCenterView) {
+    return <SupremeCommandCenter />;
+  }
 
   const panels = [
     { id: 'chart' as const, label: 'Chart', icon: '📊' },
@@ -31,9 +37,20 @@ export default function TradingWidget() {
               <h1 className="text-sm font-bold text-white tracking-wide">PJ.BOT <span className="text-purple-400">AI Agent</span></h1>
               <span className="text-[8px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">v2.0</span>
             </div>
-            <button onClick={() => setShowSettings(!showSettings)} className={`p-1.5 rounded-lg transition-all ${showSettings ? 'bg-purple-500/20 text-purple-400 border border-purple-500/40' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'}`}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m-7-7h6m6 0h6"/></svg>
-            </button>
+            <div className="flex items-center gap-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleCommandCenter}
+                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/40 text-purple-300 text-xs font-bold hover:from-purple-500/30 hover:to-blue-500/30 transition-all flex items-center gap-1.5"
+              >
+                <span>⚡</span>
+                <span>Command Control</span>
+              </motion.button>
+              <button onClick={() => setShowSettings(!showSettings)} className={`p-1.5 rounded-lg transition-all ${showSettings ? 'bg-purple-500/20 text-purple-400 border border-purple-500/40' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'}`}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m-7-7h6m6 0h6"/></svg>
+              </button>
+            </div>
           </div>
           <p className="text-[9px] text-gray-600 mt-0.5 ml-4">Multi-Routing Neural Engine • 6 Markets • MT5 • API Gateway</p>
         </div>

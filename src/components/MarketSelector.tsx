@@ -80,6 +80,19 @@ const MARKETS: Record<MarketType, { label: string; icon: string; symbols: { symb
     ],
     leverage: [1, 2, 5],
   },
+  memecoin: {
+    label: 'Meme Coin',
+    icon: '🐸',
+    symbols: [
+      { symbol: 'DOGEUSDT', pair: 'DOGE/USDT' },
+      { symbol: 'SHIBUSDT', pair: 'SHIB/USDT' },
+      { symbol: 'PEPEUSDT', pair: 'PEPE/USDT' },
+      { symbol: 'FLOKIUSDT', pair: 'FLOKI/USDT' },
+      { symbol: 'BONKUSDT', pair: 'BONK/USDT' },
+      { symbol: 'WIFUSDT', pair: 'WIF/USDT' },
+    ],
+    leverage: [1, 2, 5, 10, 20],
+  },
 };
 
 export default function MarketSelector() {
@@ -103,6 +116,7 @@ export default function MarketSelector() {
       commodities: 2350,
       indices: 5200,
       options: 450,
+      memecoin: 0.15,
     };
     generateChartData(80, basePrices[type]);
   };
@@ -115,6 +129,7 @@ export default function MarketSelector() {
       AAPL: 185, TSLA: 245, GOOGL: 175, MSFT: 420, NVDA: 880, AMZN: 185,
       SPX500: 5200, NAS100: 18500, US30: 39500, DAX: 18200, NIKKEI: 38500,
       WTI: 78, NATGAS: 2.5, XAGUSD: 28,
+      DOGEUSDT: 0.15, SHIBUSDT: 0.000025, PEPEUSDT: 0.000012, FLOKIUSDT: 0.00018, BONKUSDT: 0.000028, WIFUSDT: 2.5,
     };
     generateChartData(80, basePrices[symbol] || 100);
   };

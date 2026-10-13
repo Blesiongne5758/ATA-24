@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 export type AgentStatus = 'idle' | 'running' | 'simulating' | 'paused' | 'killed';
-export type MarketType = 'forex' | 'crypto' | 'stocks' | 'commodities' | 'indices' | 'options';
+export type MarketType = 'forex' | 'crypto' | 'stocks' | 'commodities' | 'indices' | 'options' | 'memecoin';
 export type ChartType = 'candlestick' | 'linear' | 'area' | 'heikin_ashi';
 export type TimeFrame = '1m' | '5m' | '15m' | '1h' | '4h' | '1d' | '1w';
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
@@ -80,6 +80,16 @@ export interface AutoTradeConfig {
   sessionFilter: { enabled: boolean; sessions: string[] };
 }
 
+export interface WebSocketConfig {
+  enabled: boolean;
+  url: string;
+  reconnectInterval: number;
+  maxReconnectAttempts: number;
+  heartbeatInterval: number;
+  channels: string[];
+  connectionStatus: ConnectionStatus;
+}
+
 export interface SimulationState {
   isRunning: boolean;
   progress: number;
@@ -132,6 +142,7 @@ interface TradingState {
   apiConfigs: APIConfig[];
   gatewayNodes: GatewayNode[];
   autoTradeConfig: AutoTradeConfig;
+  websocketConfig: WebSocketConfig;
   simulation: SimulationState;
   chartData: CandleData[];
   technicalSettings: TechnicalSettings;
@@ -145,7 +156,8 @@ interface TradingState {
   balance: number;
   equity: number;
   activePanel: 'chart' | 'dashboard' | 'logs' | 'simulation' | 'chat' | 'voice' | 'prompts';
-  settingsTab: 'market' | 'technical' | 'risk' | 'ai' | 'mt5' | 'api' | 'gateway' | 'auto' | 'chat' | 'download' | 'other';
+  settingsTab: 'market' | 'technical' | 'risk' | 'ai' | 'mt5' | 'api' | 'gateway' | 'auto' | 'chat' | 'download' | 'websocket' | 'other';
+  isCommandCenterView: boolean;
   chatSettings: { enabled: boolean; model: 'gpt4' | 'claude' | 'gemini' | 'local'; personality: 'professional' | 'friendly' | 'concise'; autoSuggest: boolean; maxHistory: number };
   voiceSettings: { enabled: boolean; language: string; wakeWord: string; sensitivity: number; autoExecute: boolean; voiceFeedback: boolean; voiceSpeed: number };
   setStatus: (status: AgentStatus) => void;
@@ -174,10 +186,12 @@ interface TradingState {
   resetAgent: () => void;
   setActivePanel: (panel: TradingState['activePanel']) => void;
   setSettingsTab: (tab: TradingState['settingsTab']) => void;
+  toggleCommandCenter: () => void;
   connectMT5: () => void;
   disconnectMT5: () => void;
   updateChatSettings: (settings: Partial<TradingState['chatSettings']>) => void;
   updateVoiceSettings: (settings: Partial<TradingState['voiceSettings']>) => void;
+  updateWebSocketConfig: (config: Partial<TradingState['websocketConfig']>) => void;
 }
 
 function generateCandles(count: number, basePrice: number): CandleData[] {
@@ -213,6 +227,7 @@ export const useTradingStore = create<TradingState>((set, get) => ({
     { id: '3', name: 'On-Chain Agent', type: 'onchain', endpoint: 'http://localhost:5003/analyze', apiKey: '', enabled: true, weight: 0.25, latency: 0, status: 'disconnected' },
   ],
   autoTradeConfig: { enabled: false, mode: 'balanced', maxTradesPerDay: 10, cooldownPeriod: 300, autoCompound: false, compoundPercent: 50, trailingActivation: 1.5, breakEvenTrigger: 1.0, partialTP: { enabled: false, percent: 50, closePercent: 50 }, newsFilter: { enabled: false, minutesBefore: 30 }, sessionFilter: { enabled: false, sessions: ['london', 'new_york'] } },
+  websocketConfig: { enabled: false, url: 'ws://localhost:3001', reconnectInterval: 5000, maxReconnectAttempts: 5, heartbeatInterval: 30000, channels: ['trades', 'ticker', 'orderbook'], connectionStatus: 'disconnected' },
   simulation: { isRunning: false, progress: 0, currentCandle: 0, totalCandles: 1000, equity: 10000, initialBalance: 10000, trades: [], equityCurve: [10000] },
   chartData: generateCandles(100, 67000),
   technicalSettings: { rsi: { period: 14, overbought: 70, oversold: 30 }, macd: { fast: 12, slow: 26, signal: 9 }, ema: { periods: [9, 21, 50, 200] }, bollingerBands: { period: 20, stdDev: 2 }, ichimoku: { tenkan: 9, kijun: 26, senkou: 52 }, aiPatternRecognition: { enabled: true, confidence: 0.75 }, volumeProfile: { enabled: true, lookback: 100 }, orderBookImbalance: { enabled: true, threshold: 0.6 }, stochastic: { k: 14, d: 3, overbought: 80, oversold: 20 }, adx: { period: 14, threshold: 25 } },
@@ -227,6 +242,7 @@ export const useTradingStore = create<TradingState>((set, get) => ({
   equity: 10000,
   activePanel: 'chart',
   settingsTab: 'market',
+  isCommandCenterView: false,
   chatSettings: { enabled: true, model: 'gpt4', personality: 'professional', autoSuggest: true, maxHistory: 50 },
   voiceSettings: { enabled: true, language: 'en-US', wakeWord: 'hey bot', sensitivity: 0.7, autoExecute: false, voiceFeedback: true, voiceSpeed: 1.0 },
   setStatus: (status) => set({ status }),
@@ -255,8 +271,10 @@ export const useTradingStore = create<TradingState>((set, get) => ({
   resetAgent: () => { set({ status: 'idle', simulationProgress: 0, currentPnL: 0, totalTrades: 0, winRate: 0, activePositions: 0, logs: [], simulation: { isRunning: false, progress: 0, currentCandle: 0, totalCandles: 1000, equity: 10000, initialBalance: 10000, trades: [], equityCurve: [10000] }, balance: 10000, equity: 10000 }); },
   setActivePanel: (panel) => set({ activePanel: panel }),
   setSettingsTab: (tab) => set({ settingsTab: tab }),
+  toggleCommandCenter: () => set((state) => ({ isCommandCenterView: !state.isCommandCenterView })),
   connectMT5: () => { set((state) => ({ mt5Settings: { ...state.mt5Settings, connectionStatus: 'connecting' } })); get().addLog({ type: 'system', message: '🔌 Connecting to MT5 server...' }); setTimeout(() => { const settings = get().mt5Settings; if (settings.login && settings.password) { set((state) => ({ mt5Settings: { ...state.mt5Settings, connectionStatus: 'connected' } })); get().addLog({ type: 'info', message: `✅ MT5 Connected - Account: ${settings.login}` }); } else { set((state) => ({ mt5Settings: { ...state.mt5Settings, connectionStatus: 'error' } })); get().addLog({ type: 'error', message: '❌ MT5 Connection failed - Invalid credentials' }); } }, 2000); },
   disconnectMT5: () => { set((state) => ({ mt5Settings: { ...state.mt5Settings, connectionStatus: 'disconnected' } })); get().addLog({ type: 'warning', message: '🔌 MT5 Disconnected' }); },
   updateChatSettings: (settings) => set((state) => ({ chatSettings: { ...state.chatSettings, ...settings } })),
   updateVoiceSettings: (settings) => set((state) => ({ voiceSettings: { ...state.voiceSettings, ...settings } })),
+  updateWebSocketConfig: (config) => set((state) => ({ websocketConfig: { ...state.websocketConfig, ...config } })),
 }));

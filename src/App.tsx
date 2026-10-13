@@ -27,8 +27,8 @@ function App() {
       </div>
 
       <motion.div className="relative z-10 mt-4 max-w-lg w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.6 }}>
-        <div className="grid grid-cols-6 gap-1.5">
-          {[{ icon: '₿', label: 'Crypto' }, { icon: '💱', label: 'Forex' }, { icon: '📊', label: 'Stocks' }, { icon: '🛢️', label: 'Commodity' }, { icon: '📈', label: 'Indices' }, { icon: '🎯', label: 'Options' }].map((market) => (
+        <div className="grid grid-cols-7 gap-1.5">
+          {[{ icon: '₿', label: 'Crypto' }, { icon: '💱', label: 'Forex' }, { icon: '📊', label: 'Stocks' }, { icon: '🛢️', label: 'Commodity' }, { icon: '📈', label: 'Indices' }, { icon: '🎯', label: 'Options' }, { icon: '🐸', label: 'Meme Coin' }].map((market) => (
             <div key={market.label} className="p-1.5 rounded-lg bg-gray-900/30 border border-gray-800/30 text-center">
               <div className="text-sm">{market.icon}</div>
               <div className="text-[7px] text-gray-600 mt-0.5">{market.label}</div>

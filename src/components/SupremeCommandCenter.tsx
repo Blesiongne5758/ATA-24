@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useTradingStore } from '../store/tradingStore';
 import TradingChart from './TradingChart';
 import ControlPanel from './ControlPanel';
+import MarketFooter from './MarketFooter';
 import { ActivityLog, StatsDashboard } from './Panels';
 
 // ============================================================
@@ -167,22 +168,10 @@ export default function SupremeCommandCenter() {
 
       </div>
 
-      {/* Market Icons Footer - Always at bottom with flex-shrink-0 */}
+      {/* Interactive Market Footer - Always at bottom with flex-shrink-0 */}
       <div className="flex-shrink-0 border-t border-gray-800/30 bg-gray-900/95 backdrop-blur-sm px-6 py-4">
-        <div className="grid grid-cols-7 gap-1.5 max-w-7xl mx-auto">
-          {[{ icon: '₿', label: 'Crypto' }, { icon: '💱', label: 'Forex' }, { icon: '📊', label: 'Stocks' }, { icon: '🛢️', label: 'Commodity' }, { icon: '📈', label: 'Indices' }, { icon: '🎯', label: 'Options' }, { icon: '🐸', label: 'Meme Coin' }].map((market) => (
-            <div key={market.label} className="p-1.5 rounded-lg bg-gray-900/30 border border-gray-800/30 text-center">
-              <div className="text-sm">{market.icon}</div>
-              <div className="text-[7px] text-gray-600 mt-0.5">{market.label}</div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-2 flex items-center justify-center gap-3 text-[8px] text-gray-600">
-          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-purple-500" />Technical</span>
-          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-blue-500" />Sentiment</span>
-          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-cyan-500" />On-Chain</span>
-          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-green-500" />ML</span>
-          <span className="text-purple-500">→ Meta-Agent → Decision</span>
+        <div className="max-w-7xl mx-auto">
+          <MarketFooter />
         </div>
       </div>
     </motion.div>

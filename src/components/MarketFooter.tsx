@@ -11,20 +11,20 @@ interface MarketData {
 
 const MARKET_ASSETS = {
   crypto: [
-    { symbol: 'BTC', name: 'Bitcoin', price: 67523.45, change: 2.34 },
-    { symbol: 'ETH', name: 'Ethereum', price: 3521.89, change: -1.23 },
-    { symbol: 'SOL', name: 'Solana', price: 145.67, change: 5.67 },
-    { symbol: 'BNB', name: 'Binance Coin', price: 598.34, change: 0.89 },
-    { symbol: 'XRP', name: 'Ripple', price: 0.62, change: -0.45 },
-    { symbol: 'ADA', name: 'Cardano', price: 0.45, change: 1.23 },
+    { symbol: 'BTCUSDT', name: 'Bitcoin', price: 67523.45, change: 2.34 },
+    { symbol: 'ETHUSDT', name: 'Ethereum', price: 3521.89, change: -1.23 },
+    { symbol: 'SOLUSDT', name: 'Solana', price: 145.67, change: 5.67 },
+    { symbol: 'BNBUSDT', name: 'Binance Coin', price: 598.34, change: 0.89 },
+    { symbol: 'XRPUSDT', name: 'Ripple', price: 0.62, change: -0.45 },
+    { symbol: 'ADAUSDT', name: 'Cardano', price: 0.45, change: 1.23 },
   ],
   forex: [
-    { symbol: 'EUR/USD', name: 'Euro/US Dollar', price: 1.0856, change: 0.12 },
-    { symbol: 'GBP/USD', name: 'British Pound/US Dollar', price: 1.2678, change: -0.23 },
-    { symbol: 'USD/JPY', name: 'US Dollar/Japanese Yen', price: 154.56, change: 0.34 },
-    { symbol: 'AUD/USD', name: 'Australian Dollar/US Dollar', price: 0.6543, change: -0.56 },
-    { symbol: 'USD/CHF', name: 'US Dollar/Swiss Franc', price: 0.8876, change: 0.08 },
-    { symbol: 'XAU/USD', name: 'Gold/US Dollar', price: 2345.67, change: 1.45 },
+    { symbol: 'EURUSD', name: 'Euro/US Dollar', price: 1.0856, change: 0.12 },
+    { symbol: 'GBPUSD', name: 'British Pound/US Dollar', price: 1.2678, change: -0.23 },
+    { symbol: 'USDJPY', name: 'US Dollar/Japanese Yen', price: 154.56, change: 0.34 },
+    { symbol: 'AUDUSD', name: 'Australian Dollar/US Dollar', price: 0.6543, change: -0.56 },
+    { symbol: 'USDCHF', name: 'US Dollar/Swiss Franc', price: 0.8876, change: 0.08 },
+    { symbol: 'XAUUSD', name: 'Gold/US Dollar', price: 2345.67, change: 1.45 },
   ],
   stocks: [
     { symbol: 'AAPL', name: 'Apple Inc.', price: 185.23, change: 1.56 },
@@ -35,8 +35,8 @@ const MARKET_ASSETS = {
     { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 185.12, change: -0.89 },
   ],
   commodities: [
-    { symbol: 'XAU/USD', name: 'Gold', price: 2345.67, change: 1.45 },
-    { symbol: 'XAG/USD', name: 'Silver', price: 28.34, change: -0.67 },
+    { symbol: 'XAUUSD', name: 'Gold', price: 2345.67, change: 1.45 },
+    { symbol: 'XAGUSD', name: 'Silver', price: 28.34, change: -0.67 },
     { symbol: 'WTI', name: 'Crude Oil', price: 78.56, change: 2.12 },
     { symbol: 'NATGAS', name: 'Natural Gas', price: 2.45, change: -1.23 },
   ],
@@ -54,18 +54,23 @@ const MARKET_ASSETS = {
     { symbol: 'QQQ_PUT', name: 'QQQ Put Option', price: 15.23, change: -3.45 },
   ],
   memecoin: [
-    { symbol: 'DOGE', name: 'Dogecoin', price: 0.1523, change: 8.45 },
-    { symbol: 'SHIB', name: 'Shiba Inu', price: 0.00002534, change: 12.34 },
-    { symbol: 'PEPE', name: 'Pepe', price: 0.00001245, change: -5.67 },
-    { symbol: 'FLOKI', name: 'Floki Inu', price: 0.00018765, change: 15.23 },
-    { symbol: 'BONK', name: 'Bonk', price: 0.00002834, change: -8.90 },
-    { symbol: 'WIF', name: 'dogwifhat', price: 2.45, change: 23.45 },
+    { symbol: 'DOGEUSDT', name: 'Dogecoin', price: 0.1523, change: 8.45 },
+    { symbol: 'SHIBUSDT', name: 'Shiba Inu', price: 0.00002534, change: 12.34 },
+    { symbol: 'PEPEUSDT', name: 'Pepe', price: 0.00001245, change: -5.67 },
+    { symbol: 'FLOKIUSDT', name: 'Floki Inu', price: 0.00018765, change: 15.23 },
+    { symbol: 'BONKUSDT', name: 'Bonk', price: 0.00002834, change: -8.90 },
+    { symbol: 'WIFUSDT', name: 'dogwifhat', price: 2.45, change: 23.45 },
   ],
 };
 
-export default function MarketFooter() {
-  const { updateMarketConfig, generateChartData } = useTradingStore();
+interface MarketFooterProps {
+  commandCenterMode?: boolean;
+}
+
+export default function MarketFooter({ commandCenterMode = false }: MarketFooterProps) {
+  const { updateMarketConfig, generateChartData, updateCommandCenterChart } = useTradingStore();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
 
   const markets = [
     { key: 'crypto', icon: '₿', label: 'Crypto', color: 'from-yellow-500/20 to-orange-500/20' },
@@ -78,18 +83,38 @@ export default function MarketFooter() {
   ];
 
   const handleMarketClick = (marketKey: string) => {
-    setActiveDropdown(activeDropdown === marketKey ? null : marketKey);
+    if (commandCenterMode) {
+      // Di Command Center, tampilkan slot selection dulu
+      setActiveDropdown(activeDropdown === marketKey ? null : marketKey);
+    } else {
+      // Di mode normal, langsung tampilkan assets
+      setActiveDropdown(activeDropdown === marketKey ? null : marketKey);
+    }
+  };
+
+  const handleSlotSelect = (slotId: number) => {
+    setSelectedSlot(slotId);
   };
 
   const handleAssetSelect = (marketKey: string, asset: MarketData) => {
-    updateMarketConfig({
-      type: marketKey as any,
-      symbol: asset.symbol,
-      pair: asset.symbol,
-    });
-    
-    // Generate chart data based on selected asset
-    generateChartData(100, asset.price);
+    if (commandCenterMode && selectedSlot) {
+      // Update chart di slot yang dipilih
+      updateCommandCenterChart(selectedSlot, {
+        marketType: marketKey as any,
+        symbol: asset.symbol,
+        pair: asset.symbol,
+        price: asset.price,
+      });
+      setSelectedSlot(null);
+    } else {
+      // Mode normal - update main chart
+      updateMarketConfig({
+        type: marketKey as any,
+        symbol: asset.symbol,
+        pair: asset.symbol,
+      });
+      generateChartData(100, asset.price);
+    }
     
     setActiveDropdown(null);
   };
@@ -118,14 +143,47 @@ export default function MarketFooter() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-gray-900/95 backdrop-blur-sm border border-purple-500/30 rounded-lg shadow-2xl z-50 overflow-hidden"
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-gray-900/95 backdrop-blur-sm border border-purple-500/30 rounded-lg shadow-2xl z-50 overflow-hidden"
                 >
+                  {/* Header */}
                   <div className="p-2 border-b border-gray-800/50">
                     <div className="text-xs font-bold text-white flex items-center gap-1.5">
                       <span>{market.icon}</span>
                       <span>{market.label} Assets</span>
                     </div>
+                    
+                    {/* Slot Selection untuk Command Center */}
+                    {commandCenterMode && !selectedSlot && (
+                      <div className="mt-2 pt-2 border-t border-gray-800/50">
+                        <div className="text-[10px] text-gray-400 mb-1.5">Select Chart Slot:</div>
+                        <div className="grid grid-cols-4 gap-1">
+                          {[1, 2, 3, 4].map((slot) => (
+                            <motion.button
+                              key={slot}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handleSlotSelect(slot)}
+                              className="px-2 py-1 rounded bg-purple-500/20 border border-purple-500/40 text-[10px] text-purple-300 font-bold hover:bg-purple-500/30"
+                            >
+                              Chart {slot}
+                            </motion.button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Selected Slot Indicator */}
+                    {commandCenterMode && selectedSlot && (
+                      <div className="mt-2 pt-2 border-t border-gray-800/50">
+                        <div className="text-[10px] text-green-400 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                          Chart {selectedSlot} selected
+                        </div>
+                      </div>
+                    )}
                   </div>
+
+                  {/* Asset List */}
                   <div className="max-h-64 overflow-y-auto custom-scrollbar">
                     {MARKET_ASSETS[market.key as keyof typeof MARKET_ASSETS].map((asset) => (
                       <motion.button

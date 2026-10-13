@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useTradingStore } from '../store/tradingStore';
-import TradingChart from './TradingChart';
+import CommandCenterChart from './CommandCenterChart';
 import ControlPanel from './ControlPanel';
 import MarketFooter from './MarketFooter';
 import { ActivityLog, StatsDashboard } from './Panels';
@@ -11,7 +11,7 @@ import { ActivityLog, StatsDashboard } from './Panels';
 // ============================================================
 
 export default function SupremeCommandCenter() {
-  const { toggleCommandCenter, status, marketConfig } = useTradingStore();
+  const { toggleCommandCenter, status, commandCenterCharts } = useTradingStore();
 
   return (
     <motion.div
@@ -67,71 +67,24 @@ export default function SupremeCommandCenter() {
           <ControlPanel />
         </div>
 
-        {/* 4 Live Charts Grid */}
+        {/* 4 Live Charts Grid - Dynamic from commandCenterCharts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Chart 1 - Primary Market */}
-          <div className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                Chart 1: {marketConfig.pair} (Primary)
-              </h3>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] px-2 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30">
-                  LIVE
-                </span>
+          {commandCenterCharts.map((slot) => (
+            <div key={slot.id} className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full bg-${slot.color}-500 animate-pulse`} />
+                  Chart {slot.id}: {slot.pair}
+                </h3>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[10px] px-2 py-0.5 rounded bg-${slot.color}-500/20 text-${slot.color}-400 border border-${slot.color}-500/30`}>
+                    LIVE
+                  </span>
+                </div>
               </div>
+              <CommandCenterChart slot={slot} />
             </div>
-            <TradingChart compact={true} />
-          </div>
-
-          {/* Chart 2 - Secondary Market */}
-          <div className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                Chart 2: ETH/USDT (Secondary)
-              </h3>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                  LIVE
-                </span>
-              </div>
-            </div>
-            <TradingChart compact={true} />
-          </div>
-
-          {/* Chart 3 - Meme Coin */}
-          <div className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                Chart 3: DOGE/USDT (Meme)
-              </h3>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                  LIVE
-                </span>
-              </div>
-            </div>
-            <TradingChart compact={true} />
-          </div>
-
-          {/* Chart 4 - Forex */}
-          <div className="bg-gray-900/50 border border-gray-800/50 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
-                Chart 4: EUR/USD (Forex)
-              </h3>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                  LIVE
-                </span>
-              </div>
-            </div>
-            <TradingChart compact={true} />
-          </div>
+          ))}
         </div>
 
         {/* Stats & Logs */}
@@ -171,7 +124,7 @@ export default function SupremeCommandCenter() {
       {/* Interactive Market Footer - Always at bottom with flex-shrink-0 */}
       <div className="flex-shrink-0 border-t border-gray-800/30 bg-gray-900/95 backdrop-blur-sm px-6 py-4">
         <div className="max-w-7xl mx-auto">
-          <MarketFooter />
+          <MarketFooter commandCenterMode={true} />
         </div>
       </div>
     </motion.div>

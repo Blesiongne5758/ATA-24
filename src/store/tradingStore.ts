@@ -90,6 +90,15 @@ export interface WebSocketConfig {
   connectionStatus: ConnectionStatus;
 }
 
+export interface ChartSlot {
+  id: number;
+  marketType: MarketType;
+  symbol: string;
+  pair: string;
+  price: number;
+  color: string;
+}
+
 export interface SimulationState {
   isRunning: boolean;
   progress: number;
@@ -145,6 +154,7 @@ interface TradingState {
   websocketConfig: WebSocketConfig;
   simulation: SimulationState;
   chartData: CandleData[];
+  commandCenterCharts: ChartSlot[];
   technicalSettings: TechnicalSettings;
   riskSettings: RiskSettings;
   aiSettings: AISettings;
@@ -192,6 +202,7 @@ interface TradingState {
   updateChatSettings: (settings: Partial<TradingState['chatSettings']>) => void;
   updateVoiceSettings: (settings: Partial<TradingState['voiceSettings']>) => void;
   updateWebSocketConfig: (config: Partial<TradingState['websocketConfig']>) => void;
+  updateCommandCenterChart: (slotId: number, chart: Partial<ChartSlot>) => void;
 }
 
 function generateCandles(count: number, basePrice: number): CandleData[] {
@@ -230,6 +241,12 @@ export const useTradingStore = create<TradingState>((set, get) => ({
   websocketConfig: { enabled: false, url: 'ws://localhost:3001', reconnectInterval: 5000, maxReconnectAttempts: 5, heartbeatInterval: 30000, channels: ['trades', 'ticker', 'orderbook'], connectionStatus: 'disconnected' },
   simulation: { isRunning: false, progress: 0, currentCandle: 0, totalCandles: 1000, equity: 10000, initialBalance: 10000, trades: [], equityCurve: [10000] },
   chartData: generateCandles(100, 67000),
+  commandCenterCharts: [
+    { id: 1, marketType: 'crypto', symbol: 'BTCUSDT', pair: 'BTC/USDT', price: 67000, color: 'green' },
+    { id: 2, marketType: 'crypto', symbol: 'ETHUSDT', pair: 'ETH/USDT', price: 3500, color: 'blue' },
+    { id: 3, marketType: 'memecoin', symbol: 'DOGEUSDT', pair: 'DOGE/USDT', price: 0.15, color: 'purple' },
+    { id: 4, marketType: 'forex', symbol: 'EURUSD', pair: 'EUR/USD', price: 1.085, color: 'cyan' },
+  ],
   technicalSettings: { rsi: { period: 14, overbought: 70, oversold: 30 }, macd: { fast: 12, slow: 26, signal: 9 }, ema: { periods: [9, 21, 50, 200] }, bollingerBands: { period: 20, stdDev: 2 }, ichimoku: { tenkan: 9, kijun: 26, senkou: 52 }, aiPatternRecognition: { enabled: true, confidence: 0.75 }, volumeProfile: { enabled: true, lookback: 100 }, orderBookImbalance: { enabled: true, threshold: 0.6 }, stochastic: { k: 14, d: 3, overbought: 80, oversold: 20 }, adx: { period: 14, threshold: 25 } },
   riskSettings: { positionSizing: { method: 'kelly', fixedPercent: 2, kellyFraction: 0.5, volatilityMultiplier: 1.0 }, stopLoss: { method: 'atr', fixedPercent: 2, atrMultiplier: 1.5, trailingPercent: 3 }, takeProfit: { percent: 5 }, maxDailyDrawdown: { percent: 5 }, maxOpenPositions: { count: 3 }, riskRewardRatio: { min: 2.0 }, correlationLimit: { max: 0.7 } },
   aiSettings: { model: 'ensemble', routingWeights: { technical: 40, sentiment: 35, onchain: 25 }, confidenceThreshold: 85, learningRate: 0.001, batchSize: 64, epochs: 100, ensembleMethods: ['weighted_average', 'stacking', 'voting'] },
@@ -277,4 +294,9 @@ export const useTradingStore = create<TradingState>((set, get) => ({
   updateChatSettings: (settings) => set((state) => ({ chatSettings: { ...state.chatSettings, ...settings } })),
   updateVoiceSettings: (settings) => set((state) => ({ voiceSettings: { ...state.voiceSettings, ...settings } })),
   updateWebSocketConfig: (config) => set((state) => ({ websocketConfig: { ...state.websocketConfig, ...config } })),
+  updateCommandCenterChart: (slotId, chart) => set((state) => ({
+    commandCenterCharts: state.commandCenterCharts.map(c => 
+      c.id === slotId ? { ...c, ...chart } : c
+    )
+  })),
 }));

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ShibaiAvatar from './ShibaiAvatar';
+import AIOverlordAvatar from './AIOverlordAvatar';
 import ControlPanel from './ControlPanel';
 import SettingsPanel from './SettingsPanel';
 import TradingChart from './TradingChart';
@@ -38,7 +38,7 @@ export default function TradingWidget() {
           <p className="text-[9px] text-gray-600 mt-0.5 ml-4">Multi-Routing Neural Engine • 6 Markets • MT5 • API Gateway</p>
         </div>
 
-        <ShibaiAvatar />
+        <AIOverlordAvatar />
 
         <div className="px-3 pb-3 space-y-2.5">
           <ControlPanel />

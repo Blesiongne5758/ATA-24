@@ -165,7 +165,7 @@ interface TradingState {
   activePositions: number;
   balance: number;
   equity: number;
-  activePanel: 'chart' | 'dashboard' | 'logs' | 'simulation' | 'chat' | 'voice' | 'prompts';
+  activePanel: 'chart' | 'dashboard' | 'logs' | 'simulation' | 'chat' | 'voice' | 'prompts' | 'backtest' | 'marketplace' | 'social' | 'data' | 'indicators';
   settingsTab: 'market' | 'technical' | 'risk' | 'ai' | 'mt5' | 'api' | 'gateway' | 'auto' | 'chat' | 'download' | 'websocket' | 'other';
   isCommandCenterView: boolean;
   chatSettings: { enabled: boolean; model: 'gpt4' | 'claude' | 'gemini' | 'local'; personality: 'professional' | 'friendly' | 'concise'; autoSuggest: boolean; maxHistory: number };

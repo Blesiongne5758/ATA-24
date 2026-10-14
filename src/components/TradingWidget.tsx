@@ -6,6 +6,11 @@ import SettingsPanel from './SettingsPanel';
 import TradingChart from './TradingChart';
 import SupremeCommandCenter from './SupremeCommandCenter';
 import MarketFooter from './MarketFooter';
+import AdvancedBacktest from './AdvancedBacktest';
+import StrategyMarketplace from './StrategyMarketplace';
+import SocialTrading from './SocialTrading';
+import RealMarketData from './RealMarketData';
+import AdvancedIndicators from './AdvancedIndicators';
 import { ActivityLog, StatsDashboard, SimulationEngine, ChatAI, VoiceControl, PromptLibrary } from './Panels';
 import { useTradingStore } from '../store/tradingStore';
 import { useAuthStore } from '../store/authStore';
@@ -22,6 +27,11 @@ export default function TradingWidget() {
 
   const panels = [
     { id: 'chart' as const, label: 'Chart', icon: '📊' },
+    { id: 'backtest' as const, label: 'Backtest', icon: '🔬' },
+    { id: 'marketplace' as const, label: 'Market', icon: '🏪' },
+    { id: 'social' as const, label: 'Social', icon: '👥' },
+    { id: 'data' as const, label: 'Data', icon: '📡' },
+    { id: 'indicators' as const, label: 'Indicators', icon: '📈' },
     { id: 'prompts' as const, label: 'Prompts', icon: '📚' },
     { id: 'chat' as const, label: 'Chat', icon: '💬' },
     { id: 'voice' as const, label: 'Voice', icon: '🎤' },
@@ -100,6 +110,11 @@ export default function TradingWidget() {
 
           <AnimatePresence mode="wait">
             {activePanel === 'chart' && <motion.div key="chart" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><TradingChart /></motion.div>}
+            {activePanel === 'backtest' && <motion.div key="backtest" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><AdvancedBacktest /></motion.div>}
+            {activePanel === 'marketplace' && <motion.div key="marketplace" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><StrategyMarketplace /></motion.div>}
+            {activePanel === 'social' && <motion.div key="social" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><SocialTrading /></motion.div>}
+            {activePanel === 'data' && <motion.div key="data" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><RealMarketData /></motion.div>}
+            {activePanel === 'indicators' && <motion.div key="indicators" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><AdvancedIndicators /></motion.div>}
             {activePanel === 'prompts' && <motion.div key="prompts" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><PromptLibrary /></motion.div>}
             {activePanel === 'chat' && <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><ChatAI /></motion.div>}
             {activePanel === 'voice' && <motion.div key="voice" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><VoiceControl /></motion.div>}

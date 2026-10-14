@@ -1,12 +1,13 @@
-# 🤖 PJ.BOT AI Trading Agent v2.5
+# 🤖 PJ.BOT AI Trading Agent v3.0
 
-Sistem trading AI multi-agent yang komprehensif dengan chart real-time, chat AI, voice control, prompt library, multi-chart monitoring, login system dengan image captcha, dan download client untuk multi-platform.
+Platform trading AI multi-agent enterprise-grade dengan advanced backtesting, strategy marketplace, social trading, real-time market data integration, 16+ technical indicators, chart real-time, chat AI, voice control, multi-chart monitoring, login system dengan image captcha, dan download client untuk multi-platform.
 
-![Version](https://img.shields.io/badge/version-2.5-purple)
+![Version](https://img.shields.io/badge/version-3.0-purple)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Build](https://img.shields.io/badge/build-passing-green)
 ![React](https://img.shields.io/badge/React-18.3.1-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.7.0-blue)
+![Features](https://img.shields.io/badge/features-25+-green)
 
 ## 🌟 Fitur Utama
 
@@ -85,6 +86,52 @@ Sistem trading AI multi-agent yang komprehensif dengan chart real-time, chat AI,
 - **Auto-Update Chart**: Pilih aset → chart otomatis update
 - **Price Formatting**: 6 desimal untuk harga < $1, 2 desimal untuk harga ≥ $1
 - **Smooth Animations**: Dropdown dengan Framer Motion
+
+### 🔬 Advanced Backtesting Engine (Q2 2024)
+- **6 Built-in Strategies**: EMA Cross, RSI Reversal, Bollinger Breakout, MACD Divergence, Ichimoku Cloud, Multi-Indicator
+- **Walk-Forward Optimization**: Advanced optimization untuk menghindari overfitting
+- **Monte Carlo Simulation**: 1000+ iterations untuk statistical analysis
+- **Performance Metrics**: Total Return, Annualized Return, Sharpe Ratio, Sortino Ratio, Max Drawdown, Win Rate, Profit Factor
+- **Equity Curve**: Visual equity curve dengan 245+ data points
+- **Monthly Returns**: 12-month return breakdown
+- **Trade Log**: Detailed trade history dengan entry/exit prices
+- **Custom Configuration**: Capital, commission, slippage settings
+
+### 🏪 Strategy Marketplace (Q2 2024)
+- **6 Pre-built Strategies**: Golden Cross Pro, Bollinger Squeeze, RSI Divergence Hunter, Mean Reversion Master, Scalper Pro, Swing Trading Elite
+- **Categories**: Trend, Momentum, Mean Reversion, Breakout, Scalping, Swing
+- **Search & Filter**: Full-text search dan category filtering
+- **Performance Display**: Return, Sharpe Ratio, Win Rate, Max Drawdown
+- **Pricing System**: Free dan Premium strategies ($79-$199)
+- **Community Features**: Ratings, downloads, reviews
+- **Detail Modal**: Comprehensive strategy details dengan full metrics
+
+### 👥 Social Trading Features (Q2 2024)
+- **Leaderboard**: Top 5 traders dengan rankings dan performance metrics
+- **Social Feed**: Real-time trade feed dari top traders
+- **Copy Trading**: Auto-copy trades dari followed traders
+- **Trader Profiles**: Detailed trader profiles dengan stats
+- **Follow System**: Follow/unfollow traders
+- **Trade Notifications**: Real-time notifications untuk copied trades
+- **Performance Tracking**: Track copied trades performance
+
+### 📡 Real Market Data Integration (Q2 2024)
+- **Multi-Exchange Support**: 5 exchanges (Binance, Coinbase, Kraken, Bybit, OKX)
+- **Real-Time Data**: Auto-refresh setiap 5 detik
+- **10 Trading Pairs**: BTC, ETH, SOL, BNB, XRP, ADA, DOGE, DOT, MATIC, AVAX
+- **Comprehensive Data**: Price, 24h Change, Volume, High/Low, Market Cap
+- **Exchange Status**: Connection status, latency, pair count
+- **API Status**: Requests/min, avg latency, success rate
+- **Auto-Refresh Toggle**: Enable/disable auto-refresh
+
+### 📈 Advanced Chart Indicators (Q2 2024)
+- **16 Indicators**: Comprehensive technical indicator library
+- **5 Categories**: Trend, Momentum, Volatility, Volume, Support/Resistance
+- **Customizable Parameters**: Adjustable parameters untuk setiap indicator
+- **Color-Coded**: Unique colors untuk setiap indicator
+- **Quick Presets**: 4 preset configurations (Basic, Day Trading, Swing Trading, Clear All)
+- **Toggle On/Off**: Enable/disable indicators individually
+- **Parameter Sliders**: Visual parameter adjustment dengan real-time feedback
 
 ## 📋 Daftar Lengkap Fitur
 
@@ -361,6 +408,7 @@ npm run build
 - [MULTI_CHART_SELECTION.md](./MULTI_CHART_SELECTION.md) - Multi-chart selection guide
 - [INTERACTIVE_MARKET_FOOTER.md](./INTERACTIVE_MARKET_FOOTER.md) - Interactive market footer guide
 - [NEW_FEATURES.md](./NEW_FEATURES.md) - New features overview
+- [Q2_2024_FEATURES.md](./Q2_2024_FEATURES.md) - Q2 2024 features implementation guide
 
 ### Component Documentation
 - `src/components/TradingChart.tsx` - Live chart component
@@ -375,6 +423,11 @@ npm run build
 - `src/components/SupremeCommandCenter.tsx` - Command center with 4 charts
 - `src/components/CommandCenterChart.tsx` - Individual chart component
 - `src/components/MarketFooter.tsx` - Interactive market footer
+- `src/components/AdvancedBacktest.tsx` - Advanced backtesting engine ✨ NEW
+- `src/components/StrategyMarketplace.tsx` - Strategy marketplace ✨ NEW
+- `src/components/SocialTrading.tsx` - Social trading features ✨ NEW
+- `src/components/RealMarketData.tsx` - Real market data integration ✨ NEW
+- `src/components/AdvancedIndicators.tsx` - Advanced chart indicators ✨ NEW
 
 ### State Management
 - `src/store/tradingStore.ts` - Main Zustand store
@@ -383,14 +436,19 @@ npm run build
 
 ## 🎨 UI Components
 
-### Main Panels (7 panels)
+### Main Panels (12 panels)
 1. **📊 Chart** - Live trading chart
-2. **📚 Prompts** - Prompt library
-3. **💬 Chat** - AI chat assistant
-4. **🎤 Voice** - Voice control
-5. **🔬 Sim** - Simulation engine
-6. **📈 Stats** - Statistics dashboard
-7. **📋 Logs** - Activity logs
+2. **🔬 Backtest** - Advanced backtesting engine ✨ NEW
+3. **🏪 Market** - Strategy marketplace ✨ NEW
+4. **👥 Social** - Social trading features ✨ NEW
+5. **📡 Data** - Real market data ✨ NEW
+6. **📈 Indicators** - Advanced chart indicators ✨ NEW
+7. **📚 Prompts** - Prompt library
+8. **💬 Chat** - AI chat assistant
+9. **🎤 Voice** - Voice control
+10. **🔬 Sim** - Simulation engine
+11. **📈 Stats** - Statistics dashboard
+12. **📋 Logs** - Activity logs
 
 ### Settings Tabs (12 tabs)
 1. **📊 Market** - Market selection (7 markets)
@@ -449,17 +507,20 @@ npm run build
 ## 📊 Performance Metrics
 
 ### System Stats
-- **Total Components**: 20+
+- **Total Components**: 25+
 - **Total Tasks**: 12
 - **Total Templates**: 12
 - **Total Categories**: 6
 - **Total Sub-Agents**: 12
 - **Total Markets**: 7 (Crypto, Forex, Stocks, Commodities, Indices, Options, Meme Coin)
 - **Total Assets**: 37+
-- **Build Size**: ~348 KB (gzipped: ~106 KB)
+- **Total Indicators**: 16 technical indicators
+- **Build Size**: ~393 KB (gzipped: ~114 KB)
 - **Load Time**: < 2s
 - **Chart Updates**: 500ms per chart
 - **Multi-Chart Support**: 4 simultaneous charts
+- **Backtest Strategies**: 6 built-in strategies
+- **Market Data**: 5 exchanges, 10 trading pairs
 
 ### Browser Support
 - ✅ Chrome 90+
@@ -644,14 +705,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] Login & authentication system
 - [x] Image captcha with HTML5 Canvas
 
-### Q2 2024
-- [ ] Advanced backtesting engine
-- [ ] Strategy marketplace
-- [ ] Social trading features
-- [ ] Mobile app improvements
-- [ ] Performance optimizations
-- [ ] Real market data integration
-- [ ] Advanced chart indicators
+### Q2 2024 ✅ COMPLETED
+- [x] Advanced backtesting engine (6 strategies, walk-forward, Monte Carlo)
+- [x] Strategy marketplace (6 strategies, categories, search)
+- [x] Social trading features (leaderboard, feed, copy trading)
+- [x] Real market data integration (5 exchanges, 10 pairs, auto-refresh)
+- [x] Advanced chart indicators (16 indicators, 5 categories, customizable)
+- [ ] Mobile app improvements (planned for Q3)
+- [ ] Performance optimizations (planned for Q3)
 
 ### Q3 2024
 - [ ] AI model improvements
@@ -682,7 +743,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ by PJ.BOT Team**
 
-**Version**: 2.5.0  
+**Version**: 3.0.0  
 **Last Updated**: 2024  
 **Status**: ✅ Production Ready  
-**Latest Features**: Login System, Image Captcha, Multi-Chart Selection, Interactive Market Footer
+**Latest Features**: Advanced Backtesting, Strategy Marketplace, Social Trading, Real Market Data, 16+ Technical Indicators

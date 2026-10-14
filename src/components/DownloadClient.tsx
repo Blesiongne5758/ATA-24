@@ -34,7 +34,7 @@ export default function DownloadClient() {
       platform: 'windows',
       name: 'Windows Desktop',
       icon: '🪟',
-      version: 'v2.0.3',
+      version: 'v3.0.0',
       size: '145 MB',
       requirements: [
         'Windows 10/11 (64-bit)',
@@ -42,13 +42,13 @@ export default function DownloadClient() {
         '500 MB disk space',
         'Internet connection',
       ],
-      downloadUrl: '/downloads/pjbot-windows-v2.0.3.exe',
+      downloadUrl: '/downloads/pjbot-windows-v3.0.0.exe',
     },
     {
       platform: 'android',
       name: 'Android Mobile',
       icon: '🤖',
-      version: 'v2.0.3',
+      version: 'v3.0.0',
       size: '85 MB',
       requirements: [
         'Android 8.0+',
@@ -56,13 +56,13 @@ export default function DownloadClient() {
         '200 MB storage',
         'Internet connection',
       ],
-      downloadUrl: '/downloads/pjbot-android-v2.0.3.apk',
+      downloadUrl: '/downloads/pjbot-android-v3.0.0.apk',
     },
     {
       platform: 'ios',
       name: 'iOS Mobile',
       icon: '🍎',
-      version: 'v2.0.3',
+      version: 'v3.0.0',
       size: '92 MB',
       requirements: [
         'iOS 14.0+',
@@ -70,7 +70,7 @@ export default function DownloadClient() {
         '200 MB storage',
         'Internet connection',
       ],
-      downloadUrl: '/downloads/pjbot-ios-v2.0.3.ipa',
+      downloadUrl: '/downloads/pjbot-ios-v3.0.0.ipa',
     },
   ];
 

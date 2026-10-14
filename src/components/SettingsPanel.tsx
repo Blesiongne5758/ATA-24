@@ -185,7 +185,7 @@ function OtherTab() {
       <SettingGroup title="Notifications"><Toggle label="Trade Executed" checked={true} onChange={() => {}} /><Toggle label="Stop Loss Hit" checked={true} onChange={() => {}} /><Toggle label="AI Signal Alert" checked={true} onChange={() => {}} /><Toggle label="Daily Report" checked={true} onChange={() => {}} /></SettingGroup>
       <SettingGroup title="Data Export"><div className="grid grid-cols-2 gap-1.5"><button className="px-2 py-1.5 rounded text-[9px] bg-blue-500/10 text-blue-400 border border-blue-500/30">📥 Export Trades</button><button className="px-2 py-1.5 rounded text-[9px] bg-green-500/10 text-green-400 border border-green-500/30">📥 Export Settings</button></div></SettingGroup>
       <SettingGroup title="System"><div className="space-y-1.5 text-[9px]"><div className="flex justify-between"><span className="text-gray-500">CPU</span><span className="text-gray-300">12%</span></div><div className="flex justify-between"><span className="text-gray-500">Memory</span><span className="text-gray-300">256 MB</span></div><div className="flex justify-between"><span className="text-gray-500">Uptime</span><span className="text-gray-300">2h 34m</span></div></div></SettingGroup>
-      <div className="text-[9px] text-gray-500 text-center p-2">PJ.BOT AI Trading Agent v2.0<br/>Build: 2024</div>
+      <div className="text-[9px] text-gray-500 text-center p-2">PJ.BOT AI Trading Agent v3.0<br/>Build: 2024</div>
     </div>
   );
 }

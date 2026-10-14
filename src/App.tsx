@@ -24,7 +24,7 @@ function App() {
       <motion.div className="relative z-10 text-center mb-4" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
         <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
           <span className="text-purple-400">AI</span> Trading Agent
-          <span className="text-[10px] ml-2 px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 font-normal">v2.0</span>
+          <span className="text-[10px] ml-2 px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 font-normal">v3.0</span>
         </h1>
         <p className="text-[10px] text-gray-500 mt-1 tracking-wider uppercase">
           Multi-Routing Neural Engine • 6 Markets • MT5 • API Gateway • Auto Trading

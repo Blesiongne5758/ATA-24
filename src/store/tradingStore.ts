@@ -99,6 +99,58 @@ export interface ChartSlot {
   color: string;
 }
 
+export interface AdminConfig {
+  features: {
+    liveChart: boolean;
+    chatAI: boolean;
+    voiceControl: boolean;
+    promptLibrary: boolean;
+    simulationEngine: boolean;
+    statsDashboard: boolean;
+    activityLog: boolean;
+    commandCenter: boolean;
+    strategyMarketplace: boolean;
+    socialTrading: boolean;
+    realMarketData: boolean;
+    advancedIndicators: boolean;
+    advancedBacktest: boolean;
+    downloadClient: boolean;
+  };
+  modules: {
+    mt5Integration: boolean;
+    apiGateway: boolean;
+    aiGateway: boolean;
+    autoTrading: boolean;
+    websocketConnection: boolean;
+  };
+  security: {
+    loginRequired: boolean;
+    captchaEnabled: boolean;
+    twoFactorAuth: boolean;
+    sessionTimeout: number;
+  };
+}
+
+export interface CryptoWallet {
+  address: string;
+  balance: number;
+  currency: string;
+  network: string;
+  transactions: Transaction[];
+}
+
+export interface Transaction {
+  id: string;
+  type: 'send' | 'receive' | 'distribute';
+  amount: number;
+  from: string;
+  to: string;
+  timestamp: Date;
+  status: 'pending' | 'completed' | 'failed';
+  hash: string;
+  fee: number;
+}
+
 export interface SimulationState {
   isRunning: boolean;
   progress: number;
@@ -165,11 +217,13 @@ interface TradingState {
   activePositions: number;
   balance: number;
   equity: number;
-  activePanel: 'chart' | 'dashboard' | 'logs' | 'simulation' | 'chat' | 'voice' | 'prompts' | 'backtest' | 'marketplace' | 'social' | 'data' | 'indicators';
+  activePanel: 'chart' | 'dashboard' | 'logs' | 'simulation' | 'chat' | 'voice' | 'prompts' | 'backtest' | 'marketplace' | 'social' | 'data' | 'indicators' | 'admin' | 'wallet';
   settingsTab: 'market' | 'technical' | 'risk' | 'ai' | 'mt5' | 'api' | 'gateway' | 'auto' | 'chat' | 'download' | 'websocket' | 'other';
   isCommandCenterView: boolean;
   chatSettings: { enabled: boolean; model: 'gpt4' | 'claude' | 'gemini' | 'local'; personality: 'professional' | 'friendly' | 'concise'; autoSuggest: boolean; maxHistory: number };
   voiceSettings: { enabled: boolean; language: string; wakeWord: string; sensitivity: number; autoExecute: boolean; voiceFeedback: boolean; voiceSpeed: number };
+  adminConfig: AdminConfig;
+  cryptoWallet: CryptoWallet;
   setStatus: (status: AgentStatus) => void;
   setSimulationProgress: (progress: number) => void;
   updateMarketConfig: (config: Partial<MarketConfig>) => void;
@@ -203,6 +257,13 @@ interface TradingState {
   updateVoiceSettings: (settings: Partial<TradingState['voiceSettings']>) => void;
   updateWebSocketConfig: (config: Partial<TradingState['websocketConfig']>) => void;
   updateCommandCenterChart: (slotId: number, chart: Partial<ChartSlot>) => void;
+  updateAdminConfig: (config: Partial<AdminConfig>) => void;
+  toggleFeature: (feature: keyof AdminConfig['features']) => void;
+  toggleModule: (module: keyof AdminConfig['modules']) => void;
+  updateSecurity: (security: Partial<AdminConfig['security']>) => void;
+  sendCrypto: (to: string, amount: number) => void;
+  distributeCrypto: (recipients: { address: string; amount: number }[]) => void;
+  refreshWallet: () => void;
 }
 
 function generateCandles(count: number, basePrice: number): CandleData[] {
@@ -262,6 +323,44 @@ export const useTradingStore = create<TradingState>((set, get) => ({
   isCommandCenterView: false,
   chatSettings: { enabled: true, model: 'gpt4', personality: 'professional', autoSuggest: true, maxHistory: 50 },
   voiceSettings: { enabled: true, language: 'en-US', wakeWord: 'hey bot', sensitivity: 0.7, autoExecute: false, voiceFeedback: true, voiceSpeed: 1.0 },
+  adminConfig: {
+    features: {
+      liveChart: true,
+      chatAI: true,
+      voiceControl: true,
+      promptLibrary: true,
+      simulationEngine: true,
+      statsDashboard: true,
+      activityLog: true,
+      commandCenter: true,
+      strategyMarketplace: true,
+      socialTrading: true,
+      realMarketData: true,
+      advancedIndicators: true,
+      advancedBacktest: true,
+      downloadClient: true,
+    },
+    modules: {
+      mt5Integration: false,
+      apiGateway: false,
+      aiGateway: true,
+      autoTrading: false,
+      websocketConnection: false,
+    },
+    security: {
+      loginRequired: true,
+      captchaEnabled: true,
+      twoFactorAuth: false,
+      sessionTimeout: 3600,
+    },
+  },
+  cryptoWallet: {
+    address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
+    balance: 10.5,
+    currency: 'ETH',
+    network: 'Ethereum Mainnet',
+    transactions: [],
+  },
   setStatus: (status) => set({ status }),
   setSimulationProgress: (progress) => set({ simulationProgress: progress }),
   updateMarketConfig: (config) => set((state) => ({ marketConfig: { ...state.marketConfig, ...config } })),
@@ -299,4 +398,84 @@ export const useTradingStore = create<TradingState>((set, get) => ({
       c.id === slotId ? { ...c, ...chart } : c
     )
   })),
+  updateAdminConfig: (config) => set((state) => ({ adminConfig: { ...state.adminConfig, ...config } })),
+  toggleFeature: (feature) => set((state) => ({
+    adminConfig: {
+      ...state.adminConfig,
+      features: { ...state.adminConfig.features, [feature]: !state.adminConfig.features[feature] }
+    }
+  })),
+  toggleModule: (module) => set((state) => ({
+    adminConfig: {
+      ...state.adminConfig,
+      modules: { ...state.adminConfig.modules, [module]: !state.adminConfig.modules[module] }
+    }
+  })),
+  updateSecurity: (security) => set((state) => ({
+    adminConfig: { ...state.adminConfig, security: { ...state.adminConfig.security, ...security } }
+  })),
+  sendCrypto: (to, amount) => {
+    const state = get();
+    if (amount > state.cryptoWallet.balance) {
+      state.addLog({ type: 'error', message: '❌ Insufficient balance' });
+      return;
+    }
+    const tx: Transaction = {
+      id: Date.now().toString(),
+      type: 'send',
+      amount,
+      from: state.cryptoWallet.address,
+      to,
+      timestamp: new Date(),
+      status: 'completed',
+      hash: '0x' + Math.random().toString(16).substring(2, 15) + Math.random().toString(16).substring(2, 15),
+      fee: 0.001,
+    };
+    set((state) => ({
+      cryptoWallet: {
+        ...state.cryptoWallet,
+        balance: state.cryptoWallet.balance - amount - tx.fee,
+        transactions: [tx, ...state.cryptoWallet.transactions],
+      }
+    }));
+    state.addLog({ type: 'info', message: `💸 Sent ${amount} ETH to ${to.substring(0, 10)}...` });
+  },
+  distributeCrypto: (recipients) => {
+    const state = get();
+    const totalAmount = recipients.reduce((sum, r) => sum + r.amount, 0);
+    if (totalAmount > state.cryptoWallet.balance) {
+      state.addLog({ type: 'error', message: '❌ Insufficient balance for distribution' });
+      return;
+    }
+    const txs: Transaction[] = recipients.map(r => ({
+      id: Date.now().toString() + Math.random(),
+      type: 'distribute' as const,
+      amount: r.amount,
+      from: state.cryptoWallet.address,
+      to: r.address,
+      timestamp: new Date(),
+      status: 'completed' as const,
+      hash: '0x' + Math.random().toString(16).substring(2, 15) + Math.random().toString(16).substring(2, 15),
+      fee: 0.001,
+    }));
+    const totalFee = txs.reduce((sum, tx) => sum + tx.fee, 0);
+    set((state) => ({
+      cryptoWallet: {
+        ...state.cryptoWallet,
+        balance: state.cryptoWallet.balance - totalAmount - totalFee,
+        transactions: [...txs, ...state.cryptoWallet.transactions],
+      }
+    }));
+    state.addLog({ type: 'info', message: `📤 Distributed ${totalAmount} ETH to ${recipients.length} recipients` });
+  },
+  refreshWallet: () => {
+    // Simulate wallet refresh with random balance update
+    const randomChange = (Math.random() - 0.5) * 0.1;
+    set((state) => ({
+      cryptoWallet: {
+        ...state.cryptoWallet,
+        balance: Math.max(0, state.cryptoWallet.balance + randomChange),
+      }
+    }));
+  },
 }));

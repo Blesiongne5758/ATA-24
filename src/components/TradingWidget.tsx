@@ -48,7 +48,7 @@ export default function TradingWidget() {
             <div className="flex items-center gap-2">
               <motion.div className="w-2 h-2 rounded-full bg-purple-500" animate={status === 'running' ? { opacity: [1, 0.3, 1] } : {}} transition={{ duration: 1, repeat: Infinity }} />
               <h1 className="text-sm font-bold text-white tracking-wide">PJ.BOT <span className="text-purple-400">AI Agent</span></h1>
-              <span className="text-[8px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">v2.0</span>
+              <span className="text-[8px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">v3.0</span>
             </div>
             <div className="flex items-center gap-2">
               <motion.button

@@ -11,6 +11,8 @@ import StrategyMarketplace from './StrategyMarketplace';
 import SocialTrading from './SocialTrading';
 import RealMarketData from './RealMarketData';
 import AdvancedIndicators from './AdvancedIndicators';
+import AdminConfigPanel from './AdminConfigPanel';
+import CryptoWallet from './CryptoWallet';
 import { ActivityLog, StatsDashboard, SimulationEngine, ChatAI, VoiceControl, PromptLibrary } from './Panels';
 import { useTradingStore } from '../store/tradingStore';
 import { useAuthStore } from '../store/authStore';
@@ -27,6 +29,8 @@ export default function TradingWidget() {
 
   const panels = [
     { id: 'chart' as const, label: 'Chart', icon: '📊' },
+    { id: 'wallet' as const, label: 'Wallet', icon: '💎' },
+    { id: 'admin' as const, label: 'Admin', icon: '🛡️' },
     { id: 'backtest' as const, label: 'Backtest', icon: '🔬' },
     { id: 'marketplace' as const, label: 'Market', icon: '🏪' },
     { id: 'social' as const, label: 'Social', icon: '👥' },
@@ -110,6 +114,8 @@ export default function TradingWidget() {
 
           <AnimatePresence mode="wait">
             {activePanel === 'chart' && <motion.div key="chart" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><TradingChart /></motion.div>}
+            {activePanel === 'wallet' && <motion.div key="wallet" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><CryptoWallet /></motion.div>}
+            {activePanel === 'admin' && <motion.div key="admin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><AdminConfigPanel /></motion.div>}
             {activePanel === 'backtest' && <motion.div key="backtest" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><AdvancedBacktest /></motion.div>}
             {activePanel === 'marketplace' && <motion.div key="marketplace" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><StrategyMarketplace /></motion.div>}
             {activePanel === 'social' && <motion.div key="social" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><SocialTrading /></motion.div>}
